@@ -811,9 +811,9 @@ Explain why it currently prints `3, 3, 3` and provide two different fixes.
 
 | Day | Topic | Gate Result | Carry-Over |
 |-----|-------|-------------|------------|
-| 1 | Variables & Scoping | ❌ Fail | Review var/let/const scoping, closures, and Python reference behavior |
-| 2 | Control Flow & Functions | ❌ Fail | Review closures, nonlocal, function expressions, and practical implementation |
-| 3 | Big O + Arrays (preview) | — | Carry-over: JS scoping exercises + Python reference exercises |
+| 1 | Variables & Scoping | ❌ Fail (36%) | Review var/let/const scoping, closures, Python reference behavior |
+| 2 | Control Flow & Functions | ❌ Fail (36%) | Review closures, nonlocal, function expressions, practical implementation |
+| 3 | MAR 15 - REMEDIATION | FAILED | Focus: Hoisting, Event Loop, Closure Patterns, Type Coercion |
 | 4 | Arrays & Lists | — | — |
 | 5 | Hash Maps | — | — |
 | 6 | Recursion | — | — |
