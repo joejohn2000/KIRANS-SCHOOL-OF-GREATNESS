@@ -11,29 +11,34 @@
 
 ### Q1. The Merge Sort That Loses Data — (10 marks)
 
-**Current output:** `mergeSort([5, 2, 8, 1, 9, 3])` returns `[2, 5, 9]` (elements dropped)
+**Current output:** `mergeSort([5, 2, 8, 1, 9, 3])` returns `[5]`
 **Expected output:** `[1, 2, 3, 5, 8, 9]`
 
 #### (a) Both bugs
 
-**Bug 1 — `arr.slice(mid + 1)` on line 6:**
+**Bug 1 — `arr.slice(mid + 1)` (line 6):**
 ```javascript
 const right = mergeSort(arr.slice(mid + 1));  // WRONG
 ```
-Should be `arr.slice(mid)`. Using `mid + 1` skips the element at index `mid`, silently dropping it from the sort entirely.
+Should be `arr.slice(mid)`. Using `mid + 1` skips the element at index `mid` on every recursive split, silently dropping it.
 
-**Bug 2 — remainder of `right` is never appended after the merge loop:**
+**Bug 2 — right remainder never appended in `merge`:**
 ```javascript
-// The while loop for left's remainder exists, but right's is missing
 while (i < left.length) { result.push(left[i]); i++; }
-// right remainder: MISSING
+// right remainder loop is entirely missing
 ```
-When the `while (i < left.length && j < right.length)` loop ends because `right` is exhausted first, the remaining elements of `left` are appended. But the inverse — remaining `right` elements — are never appended.
+After the main `while` loop exits, any remaining elements in `right` are never added to `result`.
 
 #### (b) Behaviour each bug causes
 
-- **Bug 1:** Every recursive split loses the middle element. For `[5, 2, 8, 1, 9, 3]` (length 6, mid=3), `right = arr.slice(4)` = `[9, 3]` instead of `arr.slice(3)` = `[1, 9, 3]`. The element `1` disappears permanently.
-- **Bug 2:** Whenever the left sub-array is exhausted first in `merge()`, any remaining tail of `right` is silently dropped. This causes the merge step to produce arrays shorter than their input.
+**Bug 1:** On each split, one element (at index `mid`) is permanently dropped. For `[5, 2, 8, 1, 9, 3]` (length 6, `mid=3`), `arr.slice(4)` = `[9, 3]` instead of the correct `arr.slice(3)` = `[1, 9, 3]`. Element `1` is lost before any merging occurs.
+
+**Bug 2:** Whenever `left` is exhausted before `right` inside `merge`, the remaining tail of `right` is silently discarded. Combined with Bug 1, the two bugs interact: Bug 1 produces a length-1 right sub-array in many cases which then gets dropped by Bug 2, collapsing the entire sort down to the leftmost element of each top-level split.
+
+Individually:
+- Bug 1 only: `mergeSort([5, 2, 8, 1, 9, 3])` → `[5, 8, 9]` (element at each `mid` dropped, right remainders preserved)
+- Bug 2 only: `mergeSort([5, 2, 8, 1, 9, 3])` → `[1, 2, 5]` (first halves kept, second halves of each merge lost)
+- Both bugs together: → `[5]`
 
 #### (c) Corrected implementation
 
@@ -43,7 +48,7 @@ function mergeSort(arr) {
 
   const mid = Math.floor(arr.length / 2);
   const left = mergeSort(arr.slice(0, mid));
-  const right = mergeSort(arr.slice(mid));     // Fix 1: mid, not mid + 1
+  const right = mergeSort(arr.slice(mid));      // Fix 1: mid, not mid + 1
 
   return merge(left, right);
 }
@@ -68,7 +73,7 @@ function merge(left, right) {
 ```
 
 **Time complexity:** O(n log n) — log n levels of recursion, O(n) merge work per level.
-**Space complexity:** O(n) — merge creates a new array of total size n per level, but only one level exists at a time.
+**Space complexity:** O(n) auxiliary — the merge step allocates new arrays totalling n elements per level.
 
 ---
 
@@ -80,17 +85,18 @@ function merge(left, right) {
 quickSort(arr, low, pivotIdx);    // WRONG — should be pivotIdx - 1
 ```
 
-After `partition` returns `pivotIdx`, the pivot is already in its correct final position. The left recursive call should sort `low` to `pivotIdx - 1`. Using `pivotIdx` includes the pivot itself in the sub-problem.
+After `partition` returns `pivotIdx`, the pivot is in its correct final position and must not be included in either recursive sub-call. The left call should sort indices `low` to `pivotIdx - 1`. Using `pivotIdx` re-includes the pivot in the left sub-problem.
 
-#### (b) Which input triggers infinite recursion and why
+#### (b) Which class of inputs triggers infinite recursion and why
 
-When the pivot ends up at `low` (i.e., `pivotIdx === low`), `partition` returns `low`. The call `quickSort(arr, low, low)` fires. Inside, `low < high` is false so it returns immediately — that's fine. But the faulty version calls `quickSort(arr, low, pivotIdx)` which is `quickSort(arr, low, low)` — also fine in that step.
+Infinite recursion occurs whenever `partition` returns `pivotIdx === high` for a given sub-call. In that case, the buggy left recursive call becomes `quickSort(arr, low, high)` — identical to the parent call — causing unbounded recursion.
 
-The infinite loop is triggered on already-sorted or reverse-sorted arrays. Example: `[1, 2, 3]`.
-- `partition([1,2,3], 0, 2)`: pivot = `arr[2]` = 3. No swaps occur. Returns `pivotIdx = 2`.
-- Left call: `quickSort(arr, 0, 2)` — same call as the parent. **Infinite recursion.**
+`pivotIdx === high` happens when the pivot is the maximum element of the current sub-array, meaning all other elements are ≤ pivot and end up to its left, leaving the pivot at `high`. This occurs:
 
-More precisely: whenever the pivot is chosen as the maximum element of the sub-array (pivotIdx = high), the faulty left call becomes `quickSort(arr, low, high)` — identical to the parent call.
+- **Always on sorted ascending arrays:** e.g., `[1, 2, 3]`. `partition([1,2,3], 0, 2)` has pivot = `arr[2]` = 3. All elements ≤ 3, so `i` advances to 1, then `arr[2]` swaps with itself. Returns `pivotIdx = 2 = high`. Infinite recursion on first call.
+- **At sub-calls during any sort:** e.g., `[5, 2, 8, 1, 9, 3]`. The first `partition` returns `pivotIdx = 2`. The right sub-call `quickSort(arr, 3, 5)` sorts `[5, 9, 8]`. Here pivot = `arr[5]` = 8. Elements ≤ 8: 5, 8. `i` reaches 1. `arr[2]` swaps with `arr[5]`. Returns `pivotIdx = 2 = high` (relative to that sub-call where `high=2` in the sub-array). Infinite recursion in that sub-call.
+
+In practice, **any input of length ≥ 2 will eventually trigger this**, because at some recursive level, the pivot will land at the `high` boundary of a sub-problem.
 
 #### (c) Corrected line
 
@@ -104,42 +110,33 @@ quickSort(arr, low, pivotIdx - 1);   // Fix: exclude pivot from left sub-problem
 
 #### (a) Time complexity of the given solution
 
-**O(n + m log m)** where `n` = length of `nums` and `m` = number of distinct elements.
+**O(n + m log m)** where `n` = `nums.length` and `m` = number of distinct elements in `nums`.
 
-- Building `freq`: O(n) — one pass over `nums`.
-- `Object.keys(freq)`: O(m).
-- `.sort(...)`: O(m log m) — sorting `m` distinct keys.
+- Building `freq`: one pass over `nums` → O(n).
+- `Object.keys(freq)`: extracts `m` keys → O(m).
+- `.sort(...)`: sorts `m` keys → O(m log m).
 - `.slice(0, k)`: O(k).
 - `.map(Number)`: O(k).
 
-Dominant term: O(n + m log m). Since m ≤ n, this is O(n log n) in the worst case (all elements distinct).
+Since m ≤ n, worst case (all elements distinct) is **O(n log n)**.
 
 #### (b) O(n) bucket sort approach
 
 1. Build the frequency map in O(n): same as the current solution.
-2. Create a `buckets` array of length `n + 1`, where `buckets[freq]` holds all numbers with that frequency (index = frequency, max possible frequency = n).
-3. Iterate `buckets` from right to left (highest frequency first), collecting elements until `k` elements are gathered.
+2. Create a `buckets` array of length `n + 1`. `buckets[f]` holds all numbers that appear exactly `f` times. The maximum possible frequency is `n` (all elements the same), so the array is sized `n + 1`. Building this takes O(m) ≤ O(n).
+3. Iterate `buckets` from index `n` down to `1` (highest frequency first), collecting elements into the result until `k` elements are gathered. This scan is O(n).
 
-This runs in O(n): building freq is O(n), building buckets is O(n), scanning buckets is O(n).
+Total: O(n). No sorting step required.
 
-#### (c) The negative number bug
+#### (c) The `Object.keys` integer-ordering bug
 
-```javascript
-.map(Number)
-```
+**The condition:** When all elements in `nums` are positive integers (or can be coerced to positive integer-like strings), `Object.keys()` returns them in **ascending numeric order** rather than insertion order. This is a V8/ECMAScript spec behaviour: integer-indexed string keys (non-negative integers that fit in a 32-bit unsigned int) are enumerated in ascending numeric order before other string keys.
 
-`Object.keys()` always returns strings. When `nums` contains negative numbers, e.g., `-1`, the key is the string `"-1"`. `Number("-1")` correctly returns `-1` — so this is actually fine.
+**Why it causes wrong output:** Consider `nums = [1, 1, 2, 2, 2, 3]`, `k = 1`. The frequency map is `{1: 2, 2: 3, 3: 1}`. `Object.keys()` returns `['1', '2', '3']` in ascending numeric order (not insertion order). The `.sort((a, b) => freq[b] - freq[a])` comparator then sorts correctly by frequency desc → `['2', '1', '3']`. This works here. But with a tie: `nums = [3, 3, 1, 1]`, `k = 1`. `freq = {3: 2, 1: 2}`. `Object.keys()` = `['1', '3']` (numeric order). Sort puts them tied. Result depends on sort stability. In Node ≥ v11 (V8 7.0+), `Array.prototype.sort` is stable, so `['1', '3']` remains as-is → result is `[1]`. But the first-inserted key was `3`, so the "natural" expected answer might be `[3]`. This non-determinism in tie-breaking is the silent failure.
 
-The actual silent bug is:
+More critically: for mixed positive integers and non-integer keys (e.g., after inserting both `'2'` and `'-1'` as keys), `Object.keys()` returns positive-integer-like keys first, then the rest — silently reordering keys before `.sort()` even runs.
 
-```javascript
-return Object.keys(freq)
-  .sort((a, b) => freq[b] - freq[a])
-```
-
-`Object.keys()` returns string keys. The comparator `freq[b] - freq[a]` works because property access with a string key still works. But: **`Object.keys()` does not guarantee insertion order for non-integer-like keys in all JS engines.** For integer-like string keys (e.g., `"1"`, `"2"`, `"100"`), V8 (Node.js) sorts them in ascending numeric order before returning them from `Object.keys()`, which means the frequency sort is applied to an already numerically-reordered key list. This can silently produce wrong results when element values are positive integers and frequency ties exist.
-
-**Fix:** Use a `Map` instead of a plain object to preserve insertion order:
+**Fix:** Use a `Map` instead of a plain object, which always preserves insertion order regardless of key type:
 
 ```javascript
 function topKFrequent(nums, k) {
@@ -147,7 +144,6 @@ function topKFrequent(nums, k) {
   for (const n of nums) {
     freq.set(n, (freq.get(n) || 0) + 1);
   }
-
   return [...freq.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, k)
@@ -163,106 +159,69 @@ function topKFrequent(nums, k) {
 
 ### Q4. Binary Search First Occurrence — Off-by-One — (9 marks)
 
-**Current output:** `firstOccurrence([1, 2, 2, 2, 3], 2)` returns `3` (last occurrence index)
-**Expected output:** `2` (index of first occurrence)
+**Current output:** `firstOccurrence([1, 2, 2, 2, 3], 2)` returns `3` (index of last occurrence)
+**Expected output:** `1` (index of first occurrence — array is `[1, 2, 2, 2, 3]`, first `2` is at index 1)
 
 #### (a) The bug
 
 ```javascript
-low = mid + 1;   // WRONG — should search LEFT half, not right
+low = mid + 1;   // WRONG — directs search rightward when a match is found
 ```
 
-When `arr[mid] === target`, the code records `result = mid` but then moves `low` to `mid + 1`, which searches the right half for more occurrences. This finds the *last* occurrence, not the first.
+When `arr[mid] === target`, the code records `result = mid` (correct) but then sets `low = mid + 1`, which narrows the search to the right half — exactly the wrong direction for finding the *first* occurrence.
 
 #### (b) Why it finds some occurrence but not the first
 
-When a match is found, the algorithm correctly records it as a candidate. However, by moving `low = mid + 1`, it directs the search toward higher indices — the direction away from the first occurrence. It keeps overwriting `result` with later indices, leaving `result` holding the rightmost match when the loop ends.
+Each time a match is found, the candidate result is updated and the search continues — but rightward. Subsequent matches at higher indices overwrite `result`. When the loop terminates, `result` holds the rightmost index where `arr[mid] === target` was observed, which is the last occurrence, not the first.
 
 #### (c) Corrected line
 
 ```javascript
 if (arr[mid] === target) {
   result = mid;
-  high = mid - 1;   // Fix: search LEFT half to find earlier occurrence
+  high = mid - 1;   // Fix: search LEFT half to find an earlier occurrence
 }
 ```
 
 ---
 
-### Q5. Rotated Array Search — Missing Half — (9 marks)
+### Q5. The Rotated Array Search That Cuts the Wrong Half — (9 marks)
 
-#### (a) Trace for `search([4, 5, 6, 7, 0, 1, 2], target=0)`
+#### (a) Trace for `search([6, 7, 0, 1, 2, 3, 4], target=6)`
 
 ```
-Initial: low=0, high=6
+Initial: low=0, high=6, nums=[6,7,0,1,2,3,4]
 
 Iteration 1:
-  mid = 3, nums[3] = 7
-  nums[low]=4 <= nums[mid]=7 → left half [4,5,6,7] is sorted
-  target=0: is 0 >= 4 && 0 < 7? → NO
+  mid = 3, nums[3] = 1
+  nums[low]=nums[0]=6 > nums[mid]=1 → right half [1,2,3,4] is sorted
+  Bug check: target=6 > nums[mid]=1 && target=6 <= nums[low]=6? → 6>1 ✓ AND 6<=6 ✓ → YES
   → low = mid + 1 = 4
+  (target 6 is at index 0, LEFT side. We just eliminated the left half. It's gone.)
 
 Iteration 2:
-  low=4, high=6, mid=5, nums[5]=1
-  nums[low]=nums[4]=0 <= nums[mid]=1 → left half [0,1] is sorted
-  target=0: is 0 >= 0 && 0 < 1? → YES
-  → high = mid - 1 = 4
+  low=4, high=6, mid=5, nums[5]=3
+  nums[low]=nums[4]=2 <= nums[mid]=3 → left half [2,3] is sorted
+  target=6: 6>=2 && 6<3? → NO → low = mid+1 = 6
 
 Iteration 3:
-  low=4, high=4, mid=4, nums[4]=0
-  nums[4] === target → return 4 ✓
+  low=6, high=6, mid=6, nums[6]=4
+  nums[6] !== 6
+  nums[low]=nums[6]=4 <= nums[mid]=4 → left sorted (single element)
+  target=6: 6>=4 && 6<4? → NO → low = 7
+
+low(7) > high(6). Loop exits. Return -1.  ← WRONG (expected 0)
 ```
 
-The given test case actually returns the correct answer. The bug manifests on a different input.
-
-**Revealing test case:** `search([3, 1], target=1)`
-
-```
-low=0, high=1, mid=0, nums[0]=3
-nums[low]=3 <= nums[mid]=3 → left sorted
-target=1: is 1 >= 3 && 1 < 3? → NO
-→ low = mid + 1 = 1
-
-low=1, high=1, mid=1, nums[1]=1
-nums[1] === target → return 1 ✓  (works here too)
-```
-
-**Actual bug case:** `search([5, 1, 3], target=3)`
-
-```
-low=0, high=2, mid=1, nums[1]=1
-nums[low]=5 > nums[mid]=1 → right half is sorted
-target=3: is 3 > nums[mid]=1 && 3 <= nums[high]=3? → YES
-→ low = mid + 1 = 2
-
-low=2, high=2, mid=2, nums[2]=3 → return 2 ✓
-```
-
-The true problematic case for the `high = mid - 1` bug:
-
-`search([3, 5, 1], target=3)` with the buggy `else` branch:
-
-```
-low=0, high=2, mid=1, nums[1]=5
-nums[low]=3 <= nums[mid]=5 → left sorted
-target=3: is 3 >= 3 && 3 < 5? → YES → high = mid-1 = 0
-
-low=0, high=0, mid=0, nums[0]=3 → return 0 ✓ (still works)
-```
-
-The logic is actually correct as written for the standard rotated search. The subtle error is in the comment `// Bug — wrong in one case`. The real issue: the `high = mid - 1` in the else of the right-sorted branch is correct. The actual bug is that when `nums[low] === nums[mid]` (duplicates), the condition `nums[low] <= nums[mid]` is true but the left half may not be genuinely sorted. **The code has no bug for the no-duplicates variant (LeetCode #33)** but fails for the duplicates variant (LeetCode #81).
-
-#### (b) The bug (for duplicates variant)
-
-When `nums[low] === nums[mid]`, we cannot determine which half is sorted. The fix for the duplicates variant:
+#### (b) The bug
 
 ```javascript
-if (nums[low] === nums[mid]) {
-  low++;  // shrink the window and retry
-}
+if (target > nums[mid] && target <= nums[low]) {   // Bug: nums[low] should be nums[high]
 ```
 
-#### (c) Corrected implementation (handles duplicates)
+When the right half `[mid+1 .. high]` is sorted, the correct check is whether `target` falls within `[nums[mid+1], nums[high]]`, i.e., `target > nums[mid] && target <= nums[high]`. Using `nums[low]` instead of `nums[high]` checks against the wrong boundary. In the trace above, `nums[low] = 6` (the rotation point element) happens to equal the target, so the condition fires and incorrectly directs the search right, discarding the left half where target actually lives.
+
+#### (c) Corrected implementation
 
 ```javascript
 function search(nums, target) {
@@ -273,11 +232,7 @@ function search(nums, target) {
 
     if (nums[mid] === target) return mid;
 
-    // Handle duplicates
-    if (nums[low] === nums[mid] && nums[mid] === nums[high]) {
-      low++;
-      high--;
-    } else if (nums[low] <= nums[mid]) {
+    if (nums[low] <= nums[mid]) {
       // Left half is sorted
       if (target >= nums[low] && target < nums[mid]) {
         high = mid - 1;
@@ -286,7 +241,7 @@ function search(nums, target) {
       }
     } else {
       // Right half is sorted
-      if (target > nums[mid] && target <= nums[high]) {
+      if (target > nums[mid] && target <= nums[high]) {   // Fix: nums[high], not nums[low]
         low = mid + 1;
       } else {
         high = mid - 1;
@@ -298,7 +253,7 @@ function search(nums, target) {
 }
 ```
 
-**Time complexity:** O(log n) average, O(n) worst case when duplicates force linear shrinking.
+**Time complexity:** O(log n) — each iteration eliminates half the remaining search space.
 
 ---
 
@@ -312,30 +267,37 @@ if (canFinish(piles, mid, h)) {
 }
 ```
 
-When `canFinish` returns `true` (speed `mid` is sufficient), we want to try a *lower* speed — but we must still consider `mid` itself as a valid answer. Setting `high = mid - 1` excludes `mid` from the search space. If `mid` is the minimum valid speed, it gets discarded, and the algorithm returns a value smaller than the true answer (which then fails `canFinish`).
+When `canFinish` returns `true`, speed `mid` is a valid answer — but it may not be the *minimum* valid speed. We need to keep searching left to find a smaller valid speed. Setting `high = mid - 1` excludes `mid` from the remaining search space. If `mid` *is* the minimum, it gets discarded and the algorithm returns a lower value that fails `canFinish`.
+
+**Verification:** `minEatingSpeed([4, 9, 4], 9)` should return `2`.
+- `canFinish(1)`: ceil(4/1)+ceil(9/1)+ceil(4/1) = 17 > 9 → false.
+- `canFinish(2)`: ceil(4/2)+ceil(9/2)+ceil(4/2) = 2+5+2 = 9 ≤ 9 → true. Answer = 2.
+
+Buggy trace: `low=1, high=9`.
+- `mid=5`. `canFinish(5)` = 1+2+1=4 ≤ 9 → true. `high = 4`.
+- `low=1, high=4`. `mid=2`. `canFinish(2)` = 2+5+2=9 ≤ 9 → true. `high = 1`.
+- `low=1, high=1`. `low < high`? NO. Returns `low = 1`. **Wrong** (expected 2).
 
 #### (b) Corrected line
 
 ```javascript
 if (canFinish(piles, mid, h)) {
-  high = mid;       // Fix: keep mid as a candidate, search left including mid
+  high = mid;       // Fix: keep mid as a candidate, continue searching left
 }
 ```
 
-#### (c) Invariant explanation and time complexity
+#### (c) Invariant and time complexity
 
-**Invariant:** At all times, the answer lies in the range `[low, high]` inclusive. The loop terminates when `low === high`, at which point both pointers have converged on the minimum valid speed.
+**Invariant:** At all times, the true minimum eating speed lies within `[low, high]` inclusive. The loop condition `while (low < high)` terminates when `low === high`, at which point both pointers have converged to the single remaining candidate — the minimum valid speed.
 
-Using `high = mid - 1` breaks this invariant by potentially excluding the answer. Using `high = mid` preserves it: if `mid` is valid, we keep it as the upper bound and search for something smaller; if nothing smaller is valid, `low` will converge to `mid`.
+`high = mid - 1` breaks this invariant by potentially dropping the answer from the search space. `high = mid` preserves it: if `mid` is valid, it remains the upper bound while we search for something smaller; if nothing smaller is valid, `low` converges to `mid`.
 
-The loop condition `while (low < high)` (not `<=`) ensures termination: when `low === high`, we stop and return `low`.
-
-**Time complexity:** O(n log m) where:
-- `m` = `Math.max(...piles)` — the search space for speed.
-- Each `canFinish` call is O(n) — one pass over all piles.
+**Time complexity:** O(n log m)
+- `m` = `Math.max(...piles)` — size of the speed search space.
 - Binary search runs O(log m) iterations.
+- Each `canFinish` call is O(n) — one pass over all piles.
 
-**Space complexity:** O(1) — no auxiliary data structures.
+**Space complexity:** O(1).
 
 ---
 
@@ -347,51 +309,31 @@ The loop condition `while (low < high)` (not `<=`) ensures termination: when `lo
 
 #### (a) All three bugs
 
-**Bug 1 (critical) — `bucket.append(key, value)` line 16:**
-```python
-bucket.append(key, value)   # WRONG — append takes one argument
-```
-`list.append()` in Python accepts exactly one argument. This raises `TypeError: list.append() takes exactly one argument (2 given)`. The intent is to append a tuple.
-
-**Bug 2 (subtle) — `load_factor` returns a float that doesn't account for a useful threshold:**
-```python
-return total_items / self.size   # technically computes load factor correctly
-```
-Wait — this is actually correct arithmetic. The true Bug 2 is that `load_factor` is never called during `set()`. A hash table should auto-resize when load factor exceeds a threshold (typically 0.7). Without this, the table degrades to O(n) lookups. However, since `resize` exists as a separate method, the missing call is the design flaw, not a code bug per se.
-
-The actual Bug 2 is in `resize`:
-```python
-self.table = [[] for _ in range(new_size)]   # Bug 3 — re-hashing uses new size immediately
-```
-Wait — this is Bug 3. Let me re-identify:
-
-**Bug 2 (subtle) — Integer keys are not supported:**
-```python
-def _hash(self, key):
-    return sum(ord(c) for c in key) % self.size
-```
-`ord(c)` only works on strings. Passing an integer key raises `TypeError: 'int' object is not iterable`. A production hash table should handle any hashable key via `hash(key)`.
-
-**Bug 3 (subtle) — `resize` updates `self.size` before re-hashing:**
-```python
-self.size = new_size
-self.table = [[] for _ in range(new_size)]   # self.size already changed — this is fine
-```
-Actually the order is: set `self.size`, then create new table, then call `self.set(k, v)` which uses `self.size` for hashing. The hashing uses the new size — which is correct. Bug 3 is that if `resize` is called with `new_size < current number of items`, the load factor increases beyond 1 and performance degrades, but there is no guard. More critically: `resize` does not validate `new_size > 0`.
-
-Corrected identification of the three bugs for this question:
-
 | # | Location | Bug |
 |---|---|---|
-| 1 | `set`, line `bucket.append(key, value)` | `append` called with 2 args instead of a tuple — TypeError |
-| 2 | `_hash` | `ord(c)` only works for string keys; any non-string key crashes |
-| 3 | `resize` | No validation: `new_size` could be 0 (ZeroDivisionError in `_hash`) or smaller than item count |
+| 1 | `set`, `bucket.append(key, value)` | `list.append()` takes exactly one argument; passing two raises `TypeError` |
+| 2 | `_hash`, `sum(ord(c) for c in key)` | `ord(c)` requires a string character; any non-string key raises `TypeError: 'int' object is not iterable` |
+| 3 | `resize`, no guard on `new_size` | Calling `resize(0)` sets `self.size = 0`, causing `ZeroDivisionError` in `_hash` (`% 0`) |
 
 #### (b) Runtime behaviour of each bug
 
-- **Bug 1:** Every `set()` call on a new key crashes with `TypeError`. Existing keys can be updated (the update path uses `bucket[i] = ...` which is correct), but inserting any new key fails.
-- **Bug 2:** Any call with a non-string key (e.g., `ht.set(1, 'a')`) raises `TypeError: 'int' object is not iterable`.
-- **Bug 3:** `resize(0)` causes `ZeroDivisionError` in `_hash` (`% 0`). Resizing to fewer buckets than items creates high-collision chains, silently degrading O(1) to O(n).
+**Bug 1:** Every `set()` call that inserts a *new* key crashes immediately:
+```
+TypeError: list.append() takes exactly one argument (2 given)
+```
+The update path (`bucket[i] = (key, value)`) is correct and unaffected, so `set` only works for keys already in the bucket.
+
+**Bug 2:** Any call with a non-string key — e.g., `ht.set(42, 'answer')` — raises:
+```
+TypeError: 'int' object is not iterable
+```
+because `for c in key` tries to iterate an integer.
+
+**Bug 3:** `resize(0)` sets `self.size = 0` then calls `self.set(k, v)` which calls `self._hash(k)` which computes `... % 0`:
+```
+ZeroDivisionError: integer modulo by zero
+```
+Resizing to a value smaller than the current item count also silently degrades performance (more collisions, longer chains), though it does not crash.
 
 #### (c) Corrected class
 
@@ -402,7 +344,7 @@ class HashTable:
         self.table = [[] for _ in range(size)]
 
     def _hash(self, key):
-        return hash(key) % self.size          # Fix 2: use built-in hash() for any key type
+        return hash(key) % self.size          # Fix 2: use built-in hash() for any hashable type
 
     def set(self, key, value):
         index = self._hash(key)
@@ -413,7 +355,7 @@ class HashTable:
                 bucket[i] = (key, value)
                 return
 
-        bucket.append((key, value))           # Fix 1: append a tuple, not two args
+        bucket.append((key, value))           # Fix 1: append a tuple, not two separate args
 
     def get(self, key):
         index = self._hash(key)
@@ -436,7 +378,7 @@ class HashTable:
         return total_items / self.size
 
     def resize(self, new_size):
-        if new_size <= 0:                     # Fix 3: guard against invalid sizes
+        if new_size <= 0:                     # Fix 3: guard against invalid size
             raise ValueError("new_size must be > 0")
         old_table = self.table
         self.size = new_size
@@ -448,79 +390,46 @@ class HashTable:
 
 ---
 
-### Q8. LRU Cache — Wrong Eviction — (8 marks)
+### Q8. LRU Cache — The Update That Forgets Its Place — (8 marks)
 
-#### (a) Trace for `capacity=2`, ops: `put(1,1)`, `put(2,2)`, `get(1)`, `put(3,3)`, `get(2)`
+#### (a) Trace for `capacity=2`, ops: `put(1,1)`, `put(2,2)`, `put(1,10)`, `put(3,3)`, `get(1)`
 
-JavaScript `Map` maintains insertion order. The LRU (least recently used) key is always `map.keys().next().value` (the first key inserted).
-
-```
-put(1, 1):  map not full → map = {1:1}
-put(2, 2):  map not full → map = {1:1, 2:2}
-get(1):     key 1 exists → delete 1, re-insert → map = {2:2, 1:1}   (1 is now MRU)
-put(3, 3):  map.size (2) >= capacity (2)
-              lruKey = map.keys().next().value = 2   ← evict key 2 (correct, 2 is LRU)
-              map.delete(2) → map = {1:1}
-              map.set(3, 3) → map = {1:1, 3:3}
-get(2):     map.has(2) → false → returns -1
-```
-
-The trace shows the logic is actually correct here. The bug in `put` is more subtle: when a key already exists and is being updated, the code deletes it and re-inserts it *after* the eviction check. That means if the map is at capacity and the key being `put` already exists, the sequence is:
-
-```javascript
-if (this.map.has(key)) {
-  this.map.delete(key);          // size drops to capacity - 1
-}
-if (this.map.size >= this.capacity) {  // false! size is now capacity - 1
-  // eviction skipped even if a different key should be evicted
-}
-this.map.set(key, value);        // size back to capacity — but order is wrong
-```
-
-The real bug: when the same key is updated (already exists), deleting first and then checking size means the eviction block runs on `size = capacity - 1`, which is `< capacity`, so eviction is skipped — this is correct behaviour for an update. The code is actually not buggy in the described scenario.
-
-The actual bug is: `map.set(key, value)` after the eviction block means the new key is inserted *after* we already evicted the LRU. This is fine. The described "inserting in wrong order" comment in the question points to the fact that when the key already exists, the re-insertion correctly moves it to MRU — this is right.
-
-**Demonstrating the real bug:** `capacity=2`, `put(1,1)`, `put(2,2)`, `put(1,10)` (update key 1).
+JavaScript `Map` maintains insertion order. LRU = first key in map (`map.keys().next()`), MRU = last key.
 
 ```
-put(1, 1):  map = {1:1}
-put(2, 2):  map = {1:1, 2:2}
-put(1, 10): map.has(1) → delete 1 → map = {2:2}, size=1
-            size(1) >= capacity(2)? NO → no eviction
-            map.set(1, 10) → map = {2:2, 1:10}
+put(1, 1):  key 1 not in map. size(0) < 2. Insert. map = {1:1}
+
+put(2, 2):  key 2 not in map. size(1) < 2. Insert. map = {1:1, 2:2}
+            LRU=1, MRU=2.
+
+put(1, 10): key 1 IS in map. Bug: map.set(1, 10) — value updated but key stays at its
+            ORIGINAL position (front of map). map = {1:10, 2:2}
+            Key 1 is still the LRU. It should be MRU (just accessed/updated).
+
+put(3, 3):  key 3 not in map. size(2) >= 2. Evict LRU = key 1. map.delete(1).
+            map = {2:2}. Insert 3. map = {2:2, 3:3}.
+            Key 1 (value 10) has been evicted — but it was just updated! It should have been MRU.
+
+get(1):     map.has(1) → false. Returns -1.
+            Expected: 10 (key 1 was updated to 10 and should still be in cache as MRU).
 ```
 
-Map order is `{2:2, 1:10}` — key 2 is LRU, key 1 is MRU. This is correct. The implementation is actually correct.
+**Result:** `get(1)` returns `-1`. Expected: `10`. The update in `put(1, 10)` failed to promote key 1 to MRU, so it was wrongly evicted.
 
-**The stated bug (wrong insertion order) manifests as:** when an existing key is updated, it correctly moves to MRU. The issue would only appear if `map.set` were called before `map.delete`, which it is not in this code. The `put` method is correct as written.
+#### (b) Why `map.set(key, value)` alone is insufficient
 
-**Verdict:** The `put` bug as annotated in the question is a red herring — the implementation is correct. The real gotcha is recognising it is correct and being able to explain why, rather than blindly agreeing there is a bug.
+`Map.prototype.set()` updates the *value* for an existing key but does not change the key's position in insertion order. The LRU eviction logic relies entirely on insertion order: the oldest-inserted key (the first in the map) is always the LRU candidate. To mark a key as "most recently used", it must be deleted and re-inserted, moving it to the end of the map's internal ordering. Calling `map.set` on an existing key skips this re-ordering step.
 
-#### (b) The actual LRU implementation (confirmed correct)
+#### (c) Corrected `put` method
 
 ```javascript
 put(key, value) {
   if (this.map.has(key)) {
-    this.map.delete(key);
-  } else if (this.map.size >= this.capacity) {
-    // Only evict if this is a NEW key, not an update
-    const lruKey = this.map.keys().next().value;
-    this.map.delete(lruKey);
+    this.map.delete(key);      // Remove from current position
+    this.map.set(key, value);  // Re-insert at end (MRU position)
+    return;
   }
-  this.map.set(key, value);
-}
-```
-
-The corrected version separates the `update` path from the `evict + insert` path using `if/else if`, preventing the size check from running incorrectly on updates.
-
-#### (c) Corrected `put`
-
-```javascript
-put(key, value) {
-  if (this.map.has(key)) {
-    this.map.delete(key);
-  } else if (this.map.size >= this.capacity) {
+  if (this.map.size >= this.capacity) {
     const lruKey = this.map.keys().next().value;
     this.map.delete(lruKey);
   }
@@ -534,21 +443,21 @@ put(key, value) {
 
 #### (a) Is the candidate correct?
 
-**No.** The candidate's O(n²) claim is wrong.
+**No.** The O(n²) claim is wrong.
 
 #### (b) Actual complexity — rigorous proof
 
 **Time complexity: O(n)**
 
-The key insight is in the `if (!numSet.has(num - 1))` guard. The `while` loop inside only executes for a number `num` that is the **start** of a consecutive sequence (i.e., `num - 1` is not in the set). Every number in the set belongs to exactly one consecutive sequence and is therefore the start of exactly one sequence.
+The `if (!numSet.has(num - 1))` guard is the key. The inner `while` loop only runs when `num` is the *start* of a consecutive sequence — meaning `num - 1` is not in the set. Every element belongs to exactly one consecutive sequence and is therefore the start of exactly one sequence.
 
-Formally: each number `x` in `numSet` can be visited by the `while` loop at most once — when the outer `for` loop processes `x - (x's position in its sequence)` (the sequence start). Since no number is ever the starting point of two sequences, and each number is visited at most once by the inner `while`, the total work across all `while` iterations across the entire `for` loop is O(n).
+**Formal bound:** Each element `x` in `numSet` can be visited by the `while` loop at most once — when processing the start of `x`'s sequence. Once `x` has been counted (`current` passes through `x`), no other outer `for` iteration will trigger the `while` to visit `x` again (because only sequence-start elements enter the `while` block). The total number of `while` iterations across *all* outer iterations is therefore bounded by `|numSet|` ≤ n.
 
-More concisely: the total number of `while` loop iterations across all outer `for` iterations is bounded by `|numSet|`, because each element of the set is incremented over at most once. Combined with the O(n) outer loop, total work = O(n) + O(n) = **O(n)**.
+Combined with the O(n) outer `for` loop (iterates over each unique element once), the total work is O(n) + O(n) = **O(n)**.
 
-**Space complexity: O(n)** — the `Set` stores at most `n` distinct elements.
+This is an amortised argument: the inner loop is "expensive" for the start of a long sequence, but that cost is spread across all elements of the sequence. No element is visited twice by the inner loop across the entire execution.
 
-**The amortized argument:** This is the same reasoning as why building a `Set` and iterating it is O(n) — even though there's a nested structure, the total number of inner operations is bounded by `n`, not `n²`.
+**Space complexity: O(n)** — the `Set` stores at most `n` distinct values.
 
 ---
 
@@ -556,31 +465,35 @@ More concisely: the total number of `while` loop iterations across all outer `fo
 
 ---
 
-### Q10. Linked List Reversal — Pointer Overwrite — (10 marks)
+### Q10. The Linked List Reversal That Corrupts the List — (10 marks)
 
 #### (a) Trace for `1 → 2 → 3 → 4 → 5`
 
 **Before loop starts:**
-- `prev = null`, `curr = node(1)`, list: `1→2→3→4→5`
+- `prev = null`, `curr = node(1)`, list intact: `1→2→3→4→5`
 
 **Iteration 1:**
 ```
-curr.next = prev         → node(1).next = null      ← node(1) is now disconnected from node(2)!
-prev = curr              → prev = node(1)
-curr = curr.next         → curr = null              ← curr.next was just overwritten to null
+curr.next = prev           →  node(1).next = null
+                              *** node(2) through node(5) are now unreachable — reference lost ***
+prev = curr                →  prev = node(1)
+curr = curr.next           →  curr = null   (because node(1).next was just set to null)
 ```
-After iteration 1: `prev = node(1)`, `curr = null`. Loop exits immediately.
-**Result returned:** `node(1)` — a single-node list `[1]`. All other nodes are lost.
+After iteration 1: `prev = node(1)`, `curr = null`. Loop exits.
+
+The loop terminates after a single iteration. All nodes except `node(1)` are lost permanently. The function returns `node(1)` — a single-node list `[1]`.
+
+There is no "second iteration" because `curr` became `null` in iteration 1.
 
 #### (b) The bug
 
 ```javascript
-curr.next = prev;   // Overwrites the only reference to the rest of the list
+curr.next = prev;   // Overwrites the only pointer to the rest of the list
 // ...
-curr = curr.next;   // curr.next is now prev (null or the previously reversed node), not the original next
+curr = curr.next;   // curr.next is now prev (null), not the original next node
 ```
 
-The `next` pointer of `curr` is overwritten before it is saved. The reference to the remainder of the original list is permanently lost.
+`curr.next` is overwritten before its original value is saved. The reference to the remainder of the list is permanently destroyed before it can be used to advance `curr`.
 
 #### (c) Corrected function
 
@@ -593,22 +506,22 @@ function reverseList(head) {
     const nextNode = curr.next;   // Fix: save next BEFORE overwriting
     curr.next = prev;
     prev = curr;
-    curr = nextNode;              // advance using saved reference
+    curr = nextNode;              // Advance using the saved reference
   }
 
   return prev;
 }
 ```
 
-**Trace for `1→2→3→4→5` with fix:**
+**Full trace on `1→2→3→4→5`:**
 ```
 Start: prev=null, curr=1
-Iter 1: next=2, 1.next=null, prev=1, curr=2
-Iter 2: next=3, 2.next=1,    prev=2, curr=3
-Iter 3: next=4, 3.next=2,    prev=3, curr=4
-Iter 4: next=5, 4.next=3,    prev=4, curr=5
-Iter 5: next=null, 5.next=4, prev=5, curr=null
-Return: prev=5  →  5→4→3→2→1  ✓
+Iter 1: next=2,    1.next=null, prev=1, curr=2
+Iter 2: next=3,    2.next=1,    prev=2, curr=3
+Iter 3: next=4,    3.next=2,    prev=3, curr=4
+Iter 4: next=5,    4.next=3,    prev=4, curr=5
+Iter 5: next=null, 5.next=4,    prev=5, curr=null
+Return: 5 → 4 → 3 → 2 → 1  ✓
 ```
 
 ---
@@ -618,98 +531,107 @@ Return: prev=5  →  5→4→3→2→1  ✓
 #### (a) The bug and which input causes a crash
 
 ```javascript
-let fast = head.next;   // Bug — crashes when head is null
+let fast = head.next;   // Bug
 ```
 
-**Input that causes a crash:** an empty list (`head = null`).
+**Input that causes a crash: `head = null` (empty list).**
 
-`head.next` throws `TypeError: Cannot read properties of null (reading 'next')` immediately before the loop begins.
+`head.next` dereferences `null`, immediately throwing:
+```
+TypeError: Cannot read properties of null (reading 'next')
+```
 
-Even on a non-null single-node list with no cycle: `head = node(1), node(1).next = null`. Then `fast = null`. Loop condition `slow !== fast` → `node(1) !== null` → true. Inside: `fast === null` → return false. This returns correctly, but only by coincidence.
+This crash happens before the loop body executes, regardless of whether a cycle exists.
 
-**The real correctness problem:** By starting `slow = head` and `fast = head.next`, the two pointers begin one step apart. On a list with a cycle, the algorithm still converges (the invariant still holds), but the termination condition `slow !== fast` relies on them starting unequal. If `head` is null, `fast = head.next` crashes. If `head` points to itself (single-node cycle), then `slow = head`, `fast = head.next = head` → `slow === fast` is immediately true, and the loop never runs, returning `true` — which is correct — but for the wrong reason.
+A secondary correctness issue exists on a **single-node list with no cycle** (`head = node(1)`, `node(1).next = null`):
+- `slow = node(1)`, `fast = null`.
+- Loop condition: `slow !== fast` → `node(1) !== null` → `true`.
+- Inside: `fast === null` → return `false`. Correct result, but reached via fragile path.
 
-#### (b) Why the original (first version) is correct
+And on a **single-node self-loop** (`node(1).next = node(1)`):
+- `slow = node(1)`, `fast = node(1).next = node(1)`.
+- Loop condition: `slow !== fast` → `node(1) !== node(1)` → `false`. Loop never runs. Returns `true`. Correct, but again by coincidence.
 
+#### (b) Why the original (first version) is correct and this version is not
+
+**Original version:**
 ```javascript
 let slow = head;
 let fast = head;
-while (fast !== null && fast.next !== null) {
-  slow = slow.next;
-  fast = fast.next.next;
-  if (slow === fast) return true;
-}
-return false;
+while (fast !== null && fast.next !== null) { ... }
 ```
 
-- Both pointers start at `head`. `head = null` is handled safely by the `while` condition before any pointer dereference.
-- Each iteration moves `slow` one step and `fast` two steps.
-- If there is no cycle, `fast` reaches `null` and the loop exits normally.
-- If there is a cycle, `fast` gains on `slow` by one node per iteration within the cycle. They will meet within at most cycle-length iterations — mathematically guaranteed.
-- The meeting check `if (slow === fast)` is placed *after* advancing both, avoiding the false positive of them both starting at the same node.
+- Both start at `head`. If `head = null`, the `while` condition short-circuits immediately — no dereference, no crash.
+- Each iteration: `slow` moves 1 step, `fast` moves 2 steps. If no cycle, `fast` reaches `null` safely. If a cycle exists, `fast` laps `slow` — they are guaranteed to meet within the cycle length iterations.
+- The meeting check `if (slow === fast) return true` is placed *after* advancing, avoiding the false positive of both starting at the same node (which would trigger `slow === fast` immediately before any movement).
+
+**This (buggy) version:**
+- `fast = head.next` crashes on `null` input.
+- The termination structure (`while (slow !== fast)`) starts with `slow !== fast` potentially `true` even for no-cycle lists, but the `null` guard inside the loop (`if (fast === null ... return false`) rescues some cases — making it brittle and harder to reason about.
 
 #### (c) Floyd's guarantee, time and space complexity
 
-**Guarantee:** If a cycle exists, `slow` and `fast` will meet within `O(n)` steps, where `n` is the number of nodes. If no cycle exists, `fast` reaches `null` in `O(n)` steps.
+**Guarantee:** If a cycle exists, `slow` and `fast` will meet at some node within the cycle within O(n) steps. If no cycle exists, `fast` reaches `null` within O(n) steps.
 
-**Time complexity:** O(n) — in the worst case, both pointers traverse the list a constant number of times.
+**Time complexity: O(n)** — in the worst case, both pointers traverse the list a bounded number of times proportional to n.
 
-**Space complexity:** O(1) — only two pointer variables are used, regardless of list size. This is the key advantage over the `Set`-based approach, which uses O(n) space.
+**Space complexity: O(1)** — only two pointer variables, regardless of list length. This is the primary advantage over a `Set`-based approach, which requires O(n) space to track visited nodes.
 
 ---
 
-### Q12. Merge Two Sorted Lists — Wrong Return — (7 marks)
+### Q12. Merge Two Sorted Lists — The Dummy Node Trap — (7 marks)
 
 #### (a) The bug
 
 ```javascript
-return dummy;   // WRONG — returns the dummy sentinel node, not the actual head
+return dummy;   // WRONG — returns the sentinel node, not the merged list head
 ```
 
-`dummy` is a placeholder node with value `0` that was never part of either input list. Returning it means the merged list starts with a spurious `0` node.
+`dummy` is a placeholder node with value `0` that was never part of either input list. Returning it prepends a spurious `0` to the result.
+
+**Evidence:** For inputs `[1,3,5]` and `[2,4,6]`, the buggy function returns `[0,1,2,3,4,5,6]` instead of `[1,2,3,4,5,6]`.
 
 #### (b) What `dummy` represents and what to return
 
-`dummy` is a sentinel head node — a convenience node that allows the merge loop to treat the first real node the same as all subsequent nodes (no special case for initialising the head of the result). It is not a real element.
+`dummy` is a sentinel head node — an empty placeholder that allows the merge loop to write `curr.next = ...` uniformly from the first iteration onward, without needing to special-case initialising the result head. It is an implementation detail, not a real element.
 
-The actual merged list starts at `dummy.next`. That is what must be returned.
+The actual merged list begins at `dummy.next` (the first node that was spliced in during the loop).
 
-#### (c) Corrected return statement and explanation of the dummy node pattern
+#### (c) Corrected return statement and dummy node explanation
 
 ```javascript
-return dummy.next;   // Fix: skip the sentinel, return first real node
+return dummy.next;   // Fix: skip the sentinel, return first real merged node
 ```
 
 **Why the dummy node pattern is useful:**
 
-Without a dummy node, the merge loop must special-case the very first node to initialise the result head:
-
+Without it, you must handle the first node specially:
 ```javascript
 // Without dummy — awkward
 let head = null, curr = null;
-if (l1.val <= l2.val) { head = l1; curr = l1; l1 = l1.next; }
-else                  { head = l2; curr = l2; l2 = l2.next; }
-// ... then the general loop
+if (!l1 || (l2 && l2.val < l1.val)) { head = l2; curr = l2; l2 = l2.next; }
+else                                 { head = l1; curr = l1; l1 = l1.next; }
+while (l1 && l2) { ... }
 ```
 
-With a dummy node, the loop body is uniform from the first iteration — `curr.next = ...` always has a valid `curr` to write to. The dummy is discarded at the end via `dummy.next`. This pattern applies to any linked list problem where you build a new list (e.g., merge k sorted lists, partition list, remove duplicates).
+With a dummy node, the first-node case is identical to all subsequent cases — `curr.next = ...` always has a valid `curr`. The sentinel is discarded at the end via `dummy.next`. This pattern applies broadly: any linked list problem that builds a new list from scratch (merge k lists, partition list, remove nth from end) benefits from this approach.
 
 ---
 
 ## MARK SUMMARY
 
-| Q | Topic | Max | Notes |
+| Q | Topic | Max | Key points |
 |---|---|---|---|
-| Q1 | Merge sort — two bugs | 10 | Bug 1: slice(mid+1) → slice(mid). Bug 2: missing right remainder loop |
-| Q2 | Quick sort — infinite recursion | 8 | pivotIdx → pivotIdx - 1 in left recursive call |
-| Q3 | Top-K frequent — complexity | 7 | O(n + m log m); bucket sort O(n); Object.keys integer ordering gotcha |
-| Q4 | Binary search first occurrence | 9 | low = mid+1 → high = mid-1 |
-| Q5 | Rotated array search | 9 | Correct for no-duplicates; fails with duplicates — add nums[low]==nums[mid] guard |
-| Q6 | Binary search on answer | 7 | high = mid-1 → high = mid |
-| Q7 | Hash table — 3 bugs | 12 | append(k,v) → append((k,v)); ord(c) → hash(key); no resize guard |
-| Q8 | LRU cache | 8 | Separate update path (if/else if) to avoid incorrect eviction check |
-| Q9 | Consecutive sequence complexity | 5 | O(n) — each element visited by inner while at most once (amortized) |
-| Q10 | List reversal — pointer loss | 10 | Save curr.next before overwriting curr.next |
-| Q11 | Floyd's cycle — wrong start | 8 | fast = head.next crashes on null; correct version starts both at head |
-| Q12 | Merge lists — wrong return | 7 | return dummy.next, not dummy |
+| Q1 | Merge sort — two bugs | 10 | Bug 1: `slice(mid+1)` → `slice(mid)`. Bug 2: missing right remainder loop. Combined output: `[5]` |
+| Q2 | Quick sort — infinite recursion | 8 | `pivotIdx` → `pivotIdx - 1`. Triggers whenever `partition` returns `pivotIdx === high` — affects nearly all inputs |
+| Q3 | Top-K frequent — complexity | 7 | O(n + m log m); bucket sort O(n); `Object.keys` integer numeric ordering affects tie-breaking; fix: use `Map` |
+| Q4 | Binary search first occurrence | 9 | `low = mid+1` → `high = mid-1` when match found. Buggy returns index 3 (last), correct returns 1 (first) |
+| Q5 | Rotated array search | 9 | `nums[low]` → `nums[high]` in right-sorted branch. `search([6,7,0,1,2,3,4], 6)` returns -1, expected 0 |
+| Q6 | Binary search on answer | 7 | `high = mid-1` → `high = mid`. `minEatingSpeed([4,9,4], 9)` returns 1 (wrong), should return 2 |
+| Q7 | Hash table — 3 bugs | 12 | `append(k,v)` → `append((k,v))`; `ord(c)` → `hash(key)`; no `resize(0)` guard |
+| Q8 | LRU cache | 8 | `map.set(key,value)` on existing key doesn't move to MRU; must `delete` then `re-insert` |
+| Q9 | Consecutive sequence complexity | 5 | O(n), not O(n²). Each element visited by inner while at most once — amortised argument |
+| Q10 | List reversal — pointer loss | 10 | Save `curr.next` before overwriting. All nodes lost after iteration 1; returns `[1]` |
+| Q11 | Floyd's cycle — wrong start | 8 | `fast = head.next` crashes on `null`. Correct version starts both at `head`, guards with `fast !== null` |
+| Q12 | Merge lists — wrong return | 7 | `return dummy` → `return dummy.next`. Buggy result starts with spurious `0` |
 | **Total** | | **100** | |

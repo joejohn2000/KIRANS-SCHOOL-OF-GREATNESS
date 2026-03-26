@@ -300,264 +300,341 @@ Explain why it currently prints `3, 3, 3` and provide two different fixes.
 
 ---
 
-### Day 11 — Stacks & Queues
-**Objective**: Know when to use stacks and queues and implement them cleanly
+### Day 11 — Stacks & Queues ⚠️ ADAPTED
+**Objective**: Implement stacks and queues from scratch and verbalise how they work
+
+> **Candidate context:** You can identify bugs in stack/queue code (march-24 Q10/Q12 scored well) but have a documented pattern of skipping implementation questions under pressure (march-15 Q9 blank, march-14 Q4 empty). This day has a mandatory implementation-first rule: write the code before reading the explanation.
 
 **Learning (2hrs)**
-- Stack: LIFO, use cases (function calls, undo, expression parsing)
-- Queue: FIFO, use cases (BFS, task scheduling, print queues)
+- Stack: LIFO, use cases (function calls, undo, bracket matching)
+- Queue: FIFO, use cases (BFS, task scheduling)
 - Deque (double-ended queue)
-- Monotonic stack pattern (intro)
+- **Critical focus — `peek()` implementation**: you called `stk.peek()` in march-15 Q10 — arrays have no `.peek()` method. The correct pattern is `arr[arr.length - 1]`
+- Monotonic stack pattern: what problem it solves and why
 
-**Practice (2hrs)**
-- LeetCode [#20 Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
-- LeetCode [#232 Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/)
+**Practice (2hrs) — implementation-first rule applies**
+For each problem below: write your solution first, then run it. Do not look up syntax mid-solve.
+- Write a `Stack` class from scratch (push, pop, peek, isEmpty) — no `.peek()` shortcut
+- Write a `Queue` class from scratch using two stacks — understand the amortised O(1) trick
+- LeetCode [#20 Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) — implement from scratch
 - LeetCode [#739 Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) (monotonic stack)
-- Implement BFS on a graph using a queue (simple adjacency list)
 
 **Review (1hr)**
-- Trace through [#739] with input `[73,74,75,71,69,72,76,73]` step by step
+- Trace [#739] with `[73,74,75,71,69,72,76,73]` step by step — write out the stack state after every element
+- Write a 3-sentence explanation of the monotonic stack pattern in your own words, then check it against a reference
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#20 Valid Parentheses](https://leetcode.com/problems/valid-parentheses/). Implement from scratch.
+*Coding challenge*: LeetCode [#232 Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/). Implement both `push` and `pop` — explain why `pop` is amortised O(1) not O(n).
 
-*Written explanation*: Describe a real-world scenario where a queue is the right data structure and one where a stack is right. What is a monotonic stack and what kind of problem does it solve?
+*Written explanation (mandatory — do not skip)*: You wrote `stk.peek()` in a previous test. Explain what that returns, why it fails, and what the correct implementation is. Then describe a real-world scenario where a stack is the right data structure and one where a queue is right.
 
 ---
 
-### Day 12 — Trees & Binary Search Trees
-**Objective**: Traverse trees and understand BST properties
+### Day 12 — Trees & Binary Search Trees ⚠️ ADAPTED
+**Objective**: Traverse trees confidently and articulate BST properties out loud
+
+> **Candidate context:** Recursion understanding is solid (march-24 Q1 fix was recursive and correct). The gap is translating understanding into written explanation — tree traversal requires both. This day enforces the "explain before you code" habit.
 
 **Learning (2hrs)**
 - Tree terminology: root, leaf, height, depth, balanced vs unbalanced
-- DFS traversals: pre-order, in-order, post-order (recursive and iterative)
-- BST property: left < node < right
-- BST operations: insert, search, delete
+- DFS traversals: pre-order, in-order, post-order — write the order on paper before coding each
+- BST property: left < node < right — and why in-order traversal of a BST gives a sorted sequence
+- BST insert and search — trace them manually on a 5-node tree before implementing
 
-**Practice (2hrs)**
+**Practice (2hrs) — explain-first rule applies**
+Before writing any code for each problem, write 2 sentences describing your approach and the expected time complexity. Then implement.
+- On paper: draw a 7-node BST and write the pre-order, in-order, and post-order sequences by hand
 - LeetCode [#104 Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/)
 - LeetCode [#226 Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/)
-- LeetCode [#98 Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/)
-- LeetCode [#102 Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) (BFS)
+- LeetCode [#102 Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) (BFS — you already understand BFS queues from Day 11)
 
 **Review (1hr)**
-- Write out all three DFS traversals by hand on a sample tree
+- Write out the three DFS traversal implementations from memory. Then explain: why does in-order traversal of a BST return values in sorted order?
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#98 Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/).
+*Coding challenge*: LeetCode [#98 Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/). Before submitting, write a 2-sentence explanation of your approach.
 
-*Written explanation*: What is the time complexity of search, insert, and delete in a balanced BST vs an unbalanced one? What makes a BST degenerate into O(n) performance?
-
----
-
-## Phase 3: Advanced Topics (Days 13–20)
+*Written explanation (mandatory)*: What is the time complexity of search, insert, and delete in a balanced BST vs an unbalanced one? What specific insertion pattern causes a BST to degenerate into O(n) performance? Give a concrete example (e.g., inserting `[1,2,3,4,5]` in order).
 
 ---
 
-### Day 13 — Heaps & Priority Queues
-**Objective**: Use heaps to efficiently find mins/maxes
+## Phase 3: Advanced Topics (Days 13–20) — ADAPTED FOR CANDIDATE
 
-**Learning (2hrs)**
-- Min-heap vs max-heap structure
-- Heapify: building a heap in O(n)
-- Insert O(log n), extract-min/max O(log n)
-- Python `heapq` module; JS has no built-in (implement or use pattern)
+> **Phase 3 ground rules, based on test evidence:**
+> 1. **No blanks allowed.** You skipped Q6, Q7, Q8 (27 marks) in the march-24 test and Q9 in march-15. From Day 13 onward, every verification gate question must have an attempt — a partial written answer scores more than nothing.
+> 2. **Explain before you implement.** Your fixes are often correct but your explanations are thin. Each practice session requires a written approach before coding.
+> 3. **Complexity justification is mandatory.** Stating "O(n)" without a reason scores 50% of available complexity marks. The "why" is always required.
+
+---
+
+### Day 13 — Stacks & Queues: Carry-over + Heaps ⚠️ RESTRUCTURED
+**Objective**: Consolidate Day 11 gaps and introduce heaps as a natural extension
+
+> **Candidate context:** The march-24 test showed Q6 (Koko bananas — binary search on answer) and Q7 (hash table implementation) were entirely skipped. Those topics are Day 8 and Day 9 content. Before moving to heaps, the first hour of Day 13 closes those two gaps explicitly.
+
+**Carry-over block (1hr) — mandatory, closes march-24 gaps**
+- **Binary search on answer pattern** (30 min): Re-read Q6 from march-24. Implement `minEatingSpeed` from scratch. Write out the invariant: "when `canFinish` returns true, set `high = mid` not `high = mid - 1`." Understand why.
+- **Hash table internals** (30 min): Re-read Q7 from march-24. Write a Python `HashTable` class from scratch with `set`, `get`, `delete`. Get Bug 1 (`append((k,v))`), Bug 2 (`hash(key)`), Bug 3 (`resize` guard) right from memory.
+
+**Learning (1hr)**
+- Min-heap vs max-heap: structure, the heap property
+- Insert O(log n) — bubble up. Extract-min O(log n) — bubble down
+- Python `heapq` module: `heappush`, `heappop`, negation trick for max-heap
+- The pattern: "top K" problems → min-heap of size K
 
 **Practice (2hrs)**
-- LeetCode [#215 Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/)
-- LeetCode [#703 Kth Largest Element in a Stream](https://leetcode.com/problems/kth-largest-element-in-a-stream/)
-- LeetCode [#347 Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)
+- On paper: insert `[5, 3, 8, 1, 4]` into a min-heap one by one, drawing the tree after each insert
+- LeetCode [#215 Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) — min-heap of size k
+- LeetCode [#347 Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) — bucket sort O(n) approach (you described this in march-24 Q3 but couldn't implement it — now implement it)
 
 **Review (1hr)**
-- Trace a heap insert and extract-min on a 7-element heap
+- Trace a `heappop` on a 7-element min-heap: draw the swap steps
+- Write the "top K" pattern template from memory
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#215 Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/). Solve using a min-heap of size k.
+*Coding challenge*: LeetCode [#703 Kth Largest Element in a Stream](https://leetcode.com/problems/kth-largest-element-in-a-stream/). Before coding, write your approach in 2 sentences including why a min-heap of size k works here.
 
-*Written explanation*: Why is a min-heap of size k the right tool for finding the kth largest element? What is the time complexity of this approach vs sorting the full array?
+*Written explanation (mandatory)*: Why does a min-heap of size k give you the kth largest element? What is the time complexity of inserting n elements while maintaining size k, vs sorting the full array? Justify both.
 
 ---
 
-### Day 14 — Graphs: Representation & Traversal
-**Objective**: Represent graphs and traverse them with BFS and DFS
+### Day 14 — LRU Cache + Graph Representation ⚠️ RESTRUCTURED
+**Objective**: Close the LRU cache gap from the march-24 test, then introduce graphs
 
-**Learning (2hrs)**
-- Adjacency matrix vs adjacency list — tradeoffs
+> **Candidate context:** Q8 (LRU Cache) was entirely skipped in the march-24 test — 8 marks unearned. The LRU cache uses a `Map` (which you know) plus the `delete-then-reinsert` pattern for MRU promotion. This is a 30-minute closure before moving on to graphs. Do not skip it.
+
+**Carry-over block (30 min) — mandatory**
+- Implement a working `LRUCache` class in JavaScript from scratch. Requirements: `get(key)` moves key to MRU, `put(key, value)` on an existing key must `delete` then `set` (not just `set`). Test with the march-24 scenario: `put(1,1)`, `put(2,2)`, `put(1,10)`, `put(3,3)`, `get(1)` must return `10`.
+- Write in your own words: why does `map.set(key, value)` alone fail when the key already exists?
+
+**Learning (1.5hrs)**
+- Graph representations: adjacency list vs adjacency matrix — when each is better
 - Directed vs undirected, weighted vs unweighted
-- BFS: level-by-level, shortest path in unweighted graphs
-- DFS: depth-first, backtracking
+- BFS on a graph: level-by-level, uses a queue (you already know queues — connect the dots)
+- DFS on a graph: uses recursion or an explicit stack
 
 **Practice (2hrs)**
-- LeetCode [#200 Number of Islands](https://leetcode.com/problems/number-of-islands/) (DFS)
-- LeetCode [#133 Clone Graph](https://leetcode.com/problems/clone-graph/)
-- LeetCode [#127 Word Ladder](https://leetcode.com/problems/word-ladder/) (BFS shortest path)
+- Build an adjacency list from edge list `[[0,1],[0,2],[1,3],[2,3]]` and draw it
+- LeetCode [#200 Number of Islands](https://leetcode.com/problems/number-of-islands/) — DFS. Write approach first.
+- LeetCode [#133 Clone Graph](https://leetcode.com/problems/clone-graph/) — BFS with a visited map
 
 **Review (1hr)**
-- Draw the BFS and DFS traversal order on the same 6-node graph
+- Draw the BFS and DFS traversal order on the same 6-node graph. Compare: which nodes get visited in what order?
+- Write: when would you choose BFS over DFS? Give a concrete example.
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#200 Number of Islands](https://leetcode.com/problems/number-of-islands/). Implement using DFS.
+*Coding challenge*: LeetCode [#200 Number of Islands](https://leetcode.com/problems/number-of-islands/). Implement using DFS. State time and space complexity with justification.
 
-*Written explanation*: When do you choose BFS over DFS on a graph? Describe what "shortest path in an unweighted graph" means and why BFS guarantees it.
+*Written explanation (mandatory)*: In the LRU cache, why must `put` on an existing key use `delete` then `set`, rather than just `set`? Then: what is the difference between BFS and DFS traversal order? Which guarantees shortest path in an unweighted graph and why?
 
 ---
 
-### Day 15 — Graph Algorithms
-**Objective**: Implement and understand essential graph algorithms
+### Day 15 — Graph Algorithms ⚠️ ADAPTED
+**Objective**: Implement topological sort and understand Dijkstra's at the conceptual level
+
+> **Candidate context:** You understand directed graphs from Day 14. Graph algorithms are new territory. The pattern from tests shows you engage well when you can connect new content to something you already know — topological sort connects to BFS (Kahn's algorithm), and Dijkstra's connects to the heap you learned on Day 13.
 
 **Learning (2hrs)**
-- Dijkstra's algorithm: shortest path in weighted graph, min-heap implementation
-- Topological sort: DFS-based and Kahn's (BFS-based)
-- Union-Find (Disjoint Set): structure, path compression, union by rank
+- Topological sort: what it means, when it applies (DAG — directed acyclic graph), two approaches:
+  - Kahn's algorithm (BFS-based, uses in-degree counts) — implement this one
+  - DFS-based (conceptual understanding only)
+- Cycle detection in directed graphs (prerequisite for topological sort)
+- Dijkstra's algorithm: shortest path in weighted graph
+  - Key idea: greedily pick the unvisited node with smallest known distance
+  - Uses a min-heap (connect to Day 13 heap knowledge)
+  - Conceptual trace only — implement is a stretch goal
 
 **Practice (2hrs)**
-- LeetCode [#743 Network Delay Time](https://leetcode.com/problems/network-delay-time/) (Dijkstra's)
-- LeetCode [#207 Course Schedule](https://leetcode.com/problems/course-schedule/) (topological sort / cycle detection)
-- LeetCode [#684 Redundant Connection](https://leetcode.com/problems/redundant-connection/) (Union-Find)
+- On paper: run Kahn's algorithm on a 5-node DAG. Write the in-degree table and trace which nodes get enqueued in what order
+- LeetCode [#207 Course Schedule](https://leetcode.com/problems/course-schedule/) — cycle detection / topological sort
+- LeetCode [#210 Course Schedule II](https://leetcode.com/problems/course-schedule-ii/) — return the topological order, not just true/false
+- Stretch: LeetCode [#743 Network Delay Time](https://leetcode.com/problems/network-delay-time/) (Dijkstra's) — attempt only after the above two are solid
 
 **Review (1hr)**
-- Trace Dijkstra's on a 4-node weighted graph
+- Trace Kahn's algorithm on `[#207]`'s graph manually before checking your code output
+- Write: what must be true of a graph for topological sort to work? What breaks it?
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#207 Course Schedule](https://leetcode.com/problems/course-schedule/). Implement using topological sort.
+*Coding challenge*: LeetCode [#207 Course Schedule](https://leetcode.com/problems/course-schedule/). Before coding, write in 3 sentences: what data structures you'll use, why, and what the time complexity will be.
 
-*Written explanation*: What is topological sort and when can it be applied (what must be true of the graph)? Describe one real-world use case.
+*Written explanation (mandatory)*: What is topological sort? What property must the graph have? Describe Kahn's algorithm step by step using the example `courses=4, prerequisites=[[1,0],[2,0],[3,1],[3,2]]`. What is the real-world use case?
 
 ---
 
-### Day 16 — Dynamic Programming
-**Objective**: Recognize DP problems and apply memoization/tabulation
+### Day 16 — Dynamic Programming ⚠️ ADAPTED
+**Objective**: Recognise DP problems and implement memoization — closing the memoization gap from march-13 and march-15
+
+> **Candidate context:** Memoization was a documented failure across three tests: march-13 Q22 (incomplete), march-15 Q9 (blank). You understand the output of recursive code but struggle to implement memoization. This day treats memoization as the primary skill, not an afterthought.
 
 **Learning (2hrs)**
-- Two properties: overlapping subproblems + optimal substructure
-- Top-down (memoization) vs bottom-up (tabulation)
-- Identifying state: what changes between subproblems
-- Common patterns: 1D DP (linear), 2D DP (grid/string)
+- Two DP properties: overlapping subproblems + optimal substructure
+- Fibonacci as the canonical example — trace the naive recursive calls, then show the repeated subproblems. Count how many times `fib(3)` is called for `fib(6)`
+- Top-down memoization: add a cache object/dict, check before computing, store after
+- Bottom-up tabulation: build from base cases upward, no recursion needed
+- **The memoize wrapper pattern** (you need this): `function memoize(fn) { const cache = {}; return function(...args) { ... } }` — this was Q9 in march-15 which you left blank
 
-**Practice (2hrs)**
-- LeetCode [#70 Climbing Stairs](https://leetcode.com/problems/climbing-stairs/)
-- LeetCode [#322 Coin Change](https://leetcode.com/problems/coin-change/)
-- LeetCode [#300 Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
-- LeetCode [#416 Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/)
+**Practice (2hrs) — implement-first rule applies**
+Start with memoization. Do not move to tabulation until the memoized version works.
+- Implement `memoize(fn)` from scratch — a general wrapper that caches any function's results by arguments
+- LeetCode [#70 Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) — solve with memoization first, then rewrite as tabulation
+- LeetCode [#322 Coin Change](https://leetcode.com/problems/coin-change/) — bottom-up tabulation. Before coding, write the recurrence: `dp[amount] = min(dp[amount - coin] + 1)` for each coin
+- LeetCode [#300 Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) — write the recurrence before coding
 
 **Review (1hr)**
-- For each problem: write the recurrence relation before coding
+- For each problem: write the recurrence relation and base case from memory before checking
+- Write the `memoize` wrapper from memory — this is the closure implementation you struggled with in march-15
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#322 Coin Change](https://leetcode.com/problems/coin-change/). Implement bottom-up DP.
+*Coding challenge*: LeetCode [#322 Coin Change](https://leetcode.com/problems/coin-change/). Implement bottom-up DP. State the recurrence relation explicitly in a comment before your code begins.
 
-*Written explanation*: What makes a problem a DP problem? Describe what "overlapping subproblems" means using the Fibonacci sequence as an example. What is the difference between memoization and tabulation?
+*Written explanation (mandatory)*: What makes a problem a DP problem? Show with Fibonacci specifically: how many times does naive recursion compute `fib(3)` when calling `fib(6)`? How does memoization fix this? What is the difference between memoization (top-down) and tabulation (bottom-up) — give one advantage of each.
 
 ---
 
-### Day 17 — Strings & Pattern Matching
-**Objective**: Master string manipulation and common string patterns
+### Day 17 — Strings & Pattern Matching ⚠️ ADAPTED
+**Objective**: Solve sliding window and two-pointer string problems, and write complexity justifications
+
+> **Candidate context:** You scored 77% on output prediction (march-13 Section C) — you understand what code does. The gap is implementing patterns. Sliding window is a pattern, not a concept: you learn it by writing the template, then applying it to problems, not by reading about it.
 
 **Learning (2hrs)**
-- String immutability in JS and Python — performance implications
-- StringBuilder pattern: why repeated concatenation is O(n²)
-- Sliding window on strings
-- Two-pointer on strings
-- Anagram/palindrome patterns
+- String immutability: why repeated `str += char` in a loop is O(n²) — draw the memory allocations
+- The sliding window template: `left`, `right` pointers, expand right, shrink left when condition violated
+- Two-pointer on sorted structures
+- Frequency map pattern for anagram/substring problems: `Map` for character counts (use `Map`, not object — you know why from Day 9 and march-24 Q3)
 
-**Practice (2hrs)**
-- LeetCode [#3 Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
-- LeetCode [#76 Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/)
-- LeetCode [#5 Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/)
-- LeetCode [#424 Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/)
+**Practice (2hrs) — write the template first**
+Before solving each problem, write the sliding window template skeleton from memory:
+```
+let left = 0, maxLen = 0;
+const window = new Map();
+for (let right = 0; right < s.length; right++) {
+  // expand: add s[right] to window
+  // shrink: while (window violates constraint) { remove s[left]; left++ }
+  // update result
+}
+```
+Then apply it to:
+- LeetCode [#3 Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) — sliding window
+- LeetCode [#424 Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) — sliding window with frequency tracking
+- LeetCode [#76 Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) — harder variant, attempt after the above two
+- LeetCode [#5 Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/) — expand-from-center (different pattern)
 
 **Review (1hr)**
-- Write the sliding window template in both JS and Python
+- Write the sliding window template from memory without looking
+- Write the `memoize` wrapper again — reinforcement from Day 16
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#3 Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/). Solve in O(n).
+*Coding challenge*: LeetCode [#3 Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/). Solve in O(n). Before submitting, write the time and space complexity with justification (not just the answer — justify each).
 
-*Written explanation*: Why is repeated string concatenation in a loop O(n²) instead of O(n)? How does using an array/list of characters and joining at the end fix this?
+*Written explanation (mandatory)*: Why is repeated string concatenation (`result += char`) in a loop O(n²)? Draw the memory allocation to support your answer. How does using an array and joining at the end fix this? Also: why should you use `Map` instead of a plain object for the frequency count in these problems?
 
 ---
 
-### Day 18 — Bit Manipulation
-**Objective**: Understand bitwise operations and apply common tricks
+### Day 18 — Bit Manipulation + Complexity Justification Practice ⚠️ ADAPTED
+**Objective**: Learn bit manipulation AND practise the verbal complexity justification habit
 
-**Learning (2hrs)**
-- AND, OR, XOR, NOT, left shift, right shift
-- Common tricks: check if bit is set, set a bit, clear a bit, toggle a bit
-- XOR trick: n ^ n = 0, n ^ 0 = n
-- Powers of 2: `n & (n-1)` removes the lowest set bit
+> **Candidate context:** You consistently state complexity results correctly (O(n), O(log n)) but without justification — the march-24 Q9 answer was "it's O(n)" without the amortised proof. FAANG interviews require the reasoning, not the label. Day 18 is deliberately lighter on new content to create space for justification practice.
+
+**Learning (1.5hrs)**
+- AND, OR, XOR, NOT, left shift, right shift — with 8-bit binary examples for each
+- XOR properties: `n ^ n = 0`, `n ^ 0 = n` — memorise these
+- `n & (n-1)` removes the lowest set bit — why: trace in binary
+- Check if n is a power of 2: `n & (n-1) === 0`
+- Bit masking: check if bit i is set, set bit i, clear bit i
 
 **Practice (2hrs)**
-- LeetCode [#136 Single Number](https://leetcode.com/problems/single-number/) (XOR)
-- LeetCode [#191 Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/)
-- LeetCode [#338 Counting Bits](https://leetcode.com/problems/counting-bits/)
-- LeetCode [#371 Sum of Two Integers](https://leetcode.com/problems/sum-of-two-integers/) (no + operator)
+- For every problem below: before coding, write what bit operation you'll use and why
+- LeetCode [#136 Single Number](https://leetcode.com/problems/single-number/) — XOR
+- LeetCode [#191 Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/) — `n & (n-1)` trick
+- LeetCode [#338 Counting Bits](https://leetcode.com/problems/counting-bits/) — DP + bit trick
+- **Complexity justification drill** (30 min): Take three problems you've already solved (pick from Days 11–17). For each, write the time and space complexity and justify it in 3 sentences minimum. No single-word answers.
 
 **Review (1hr)**
-- Write out each bit operation with a concrete binary example (8-bit numbers)
+- Write out each bit operation with a concrete 8-bit example
+- Complexity drill: pick the hardest problem from this week and write a paragraph explaining why it has the complexity it does — as if explaining to an interviewer
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#136 Single Number](https://leetcode.com/problems/single-number/). Solve using XOR only.
+*Coding challenge*: LeetCode [#136 Single Number](https://leetcode.com/problems/single-number/). Solve using XOR only. Then: write out the XOR operations for `[4, 1, 2, 1, 2]` step by step in binary.
 
-*Written explanation*: Explain why XOR works for the Single Number problem. Walk through the XOR operations for the array `[4, 1, 2, 1, 2]` step by step.
+*Written explanation (mandatory — this is the primary gate)*: Explain why XOR works for the Single Number problem. Walk through `[4, 1, 2, 1, 2]` step by step in binary. Then: pick any problem from Days 11–17 and justify its time complexity in 3+ sentences without using the phrase "because it loops." The explanation must reference the actual operations being counted.
 
 ---
 
-### Day 19 — OOP Principles
-**Objective**: Apply OOP design and understand SOLID principles
+### Day 19 — OOP Principles ⚠️ ADAPTED
+**Objective**: Implement class hierarchies correctly and connect OOP to patterns you've already seen
+
+> **Candidate context:** You implemented a `BankAccount`-like closure in march-15 Q7 but got the `withdraw` logic inverted (`if amount >= 0` instead of `if amount > balance`). The Day 19 OOP bank account challenge is the same domain — treat it as fixing that mistake properly, now using classes instead of closures.
 
 **Learning (2hrs)**
-- Encapsulation, inheritance, polymorphism, abstraction
-- SOLID principles: Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion
-- Class vs prototype-based inheritance (JS)
-- Abstract classes and interfaces (Python ABCs)
+- Encapsulation: the class equivalent of closure-based private state
+- Inheritance: `extends`, `super()`, method overriding
+- Polymorphism: the same method name, different behaviour per subclass
+- `instanceof`, `typeof` with classes
+- **Connect to what you know**: the `BankAccount` closure from march-15 Q7 → now rewrite it as a class. Same logic, different syntax.
+- SOLID: Single Responsibility and Liskov Substitution — the two most tested in interviews
 
-**Practice (2hrs)**
-- Implement a shapes hierarchy: `Shape` base → `Circle`, `Rectangle`, `Triangle` with `area()` and `perimeter()`
-- Implement a `Logger` class that follows Single Responsibility (one class per concern)
-- Refactor a god-class example into properly separated responsibilities
+**Practice (2hrs) — fix-it-first rule**
+Start by fixing your march-15 Q7 `withdraw` bug as a class:
+- Write `BankAccount` as a class with correct `withdraw` (guard: `if (amount > this.balance) throw new Error(...)`)
+- Subclass into `SavingsAccount` with `applyInterest()` that adds 2% to balance
+- Implement a shapes hierarchy: `Shape` (abstract) → `Circle`, `Rectangle` each with `area()` and `perimeter()`
+- Write a `Logger` class that logs to console — then explain: what Single Responsibility means for it
 
 **Review (1hr)**
-- Write one sentence per SOLID principle with a concrete code example
+- Write from memory: what is Liskov Substitution? Write one example that violates it
+- Trace: if `SavingsAccount extends BankAccount`, and you call `account.withdraw(50)` on a `SavingsAccount` instance — which method runs?
 
 **Verification Gate**
 
-*Coding challenge*: Design a `BankAccount` class in JS or Python with: `deposit()`, `withdraw()` (throws if insufficient funds), `getBalance()`. Subclass it into `SavingsAccount` that earns 2% interest with an `applyInterest()` method. Demonstrate polymorphism.
+*Coding challenge*: Implement `BankAccount` and `SavingsAccount` as described. The `withdraw` method must throw (not return an error string) when funds are insufficient. `applyInterest()` must actually update `this.balance`. Demonstrate both with test calls.
 
-*Written explanation*: What is the Liskov Substitution Principle? Give an example of code that violates it and explain why that creates a problem.
+*Written explanation (mandatory)*: What is the Liskov Substitution Principle? Write a concrete example in JS or Python that violates it and explain what breaks at runtime. Then: what is the difference between using a closure for private state (your march-15 Q7 approach) vs using a class? When would you choose each?
 
 ---
 
-### Day 20 — System Design Basics
-**Objective**: Understand the vocabulary and core trade-offs of system design
+### Day 20 — System Design Basics + Full Verbal Review ⚠️ ADAPTED
+**Objective**: Learn system design vocabulary and consolidate the verbal explanation habit built across Days 11–19
 
-**Learning (2hrs)**
-- Scalability: vertical vs horizontal scaling
-- Latency vs throughput
-- Caching: cache-aside, write-through, CDN
-- Load balancing: round-robin, consistent hashing
-- CAP theorem: consistency, availability, partition tolerance — pick two
-- Database basics: SQL vs NoSQL, when to use each
+> **Candidate context:** System design is new territory. The risk given your test pattern is that you engage with the concepts but skip the verbal/written part. Day 20 reverses the ratio: 1hr of new content, 1hr of design practice, and 1hr of verbal review of the past 10 days. The verbal review is not optional.
+
+**Learning (1hr) — core vocabulary only**
+- Scalability: vertical vs horizontal scaling — one concrete difference
+- Latency vs throughput — define both, give a concrete example of a trade-off
+- Caching: cache-aside pattern — when does a cache miss happen and what then?
+- CAP theorem: consistency, availability, partition tolerance — pick two. One real database per pair:
+  - CP: HBase (consistent + partition-tolerant, sacrifices availability)
+  - AP: Cassandra (available + partition-tolerant, sacrifices consistency)
+  - CA: PostgreSQL (consistent + available, no partition tolerance — single node)
+- SQL vs NoSQL: when each fits — 2 sentences each
 
 **Practice (2hrs)**
-- Design a URL shortener: define components, API, database schema, scale considerations
-- Design a rate limiter: algorithm choices (token bucket, fixed window, sliding window)
-- Write up trade-offs for each design in bullet points
+- Design a URL shortener in writing: components, API (`POST /shorten`, `GET /:code`), database schema, how you'd scale it to 10M users
+- Implement a sliding window rate limiter in JavaScript: `allow(userId)` returns true/false. Max 5 requests per 10 seconds per user. Use a `Map<userId, timestamps[]>`.
+- Write the trade-offs for both designs as bullet points — at least 3 trade-offs per design
 
-**Review (1hr)**
-- Draw the architecture diagram for your URL shortener
+**Review (1hr) — mandatory verbal review of Days 11–19**
+Answer each of the following in writing (2–3 sentences each). No looking up:
+1. What is the difference between a stack and a queue? Give a use case for each.
+2. What is the in-order traversal of a BST and why is it sorted?
+3. What is the heap property? Why is heap insert O(log n)?
+4. What is the LRU cache bug you fixed — why does `map.set` alone fail?
+5. What is the sliding window template — write it from memory.
+6. What is the `memoize` wrapper — write it from memory.
+7. Pick the hardest complexity justification you did on Day 18 and repeat it.
 
 **Verification Gate**
 
-*Coding challenge*: Implement a basic in-memory rate limiter in Python or JS. It should allow max N requests per second per user ID. Use the sliding window approach.
+*Coding challenge*: Implement a sliding window rate limiter in JavaScript: `allow(userId)` — max N requests per window of W milliseconds. Prune timestamps older than W on each call. State time and space complexity with justification.
 
-*Written explanation*: Explain the CAP theorem. Give a real database (e.g. PostgreSQL, Cassandra, DynamoDB) as an example of each trade-off pair and justify why.
+*Written explanation (mandatory)*: Explain the CAP theorem. Give a real database as an example of each pair (CP, AP, CA) and justify why it sits in that category. Then answer: in your URL shortener design, what is the bottleneck at 10M users and how would you address it?
 
 ---
 
@@ -820,17 +897,17 @@ Explain why it currently prints `3, 3, 3` and provide two different fixes.
 | 7 | Sorting | — | — |
 | 8 | Searching | — | — |
 | 9 | Hash Tables | — | — |
-| 10 | Linked Lists | — | — |
-| 11 | Stacks & Queues | — | — |
-| 12 | Trees & BST | — | — |
-| 13 | Heaps | — | — |
-| 14 | Graph Traversal | — | — |
-| 15 | Graph Algorithms | — | — |
-| 16 | Dynamic Programming | — | — |
-| 17 | Strings | — | — |
-| 18 | Bit Manipulation | — | — |
-| 19 | OOP | — | — |
-| 20 | System Design Basics | — | — |
+| 10 | Linked Lists | ✅ Completed (march-24 test: 58/100) | Carry-over to Day 13: hash table bugs (Q7, 0/12) and LRU cache (Q8, 0/8). Complexity justification thin across all sections. |
+| 11 | Stacks & Queues (ADAPTED) | — | Mandatory: fix `peek()` implementation from march-15 Q10 |
+| 12 | Trees & BST (ADAPTED) | — | — |
+| 13 | Heaps + carry-over: binary search on answer + hash table (RESTRUCTURED) | — | — |
+| 14 | LRU Cache fix + Graph Representation (RESTRUCTURED) | — | — |
+| 15 | Graph Algorithms (ADAPTED) | — | — |
+| 16 | Dynamic Programming (ADAPTED) | — | Memoize wrapper — failed in march-13, march-15 |
+| 17 | Strings (ADAPTED) | — | — |
+| 18 | Bit Manipulation + Complexity Justification (ADAPTED) | — | — |
+| 19 | OOP (ADAPTED) | — | Fix march-15 Q7 withdraw logic |
+| 20 | System Design + Verbal Review (ADAPTED) | — | — |
 | 21 | HTML5 | — | — |
 | 22 | CSS Layouts | — | — |
 | 23 | JS Deep Dive | — | — |
