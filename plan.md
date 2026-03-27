@@ -373,6 +373,8 @@ Before writing any code for each problem, write 2 sentences describing your appr
 **Objective**: Consolidate Day 11 gaps and introduce heaps as a natural extension
 
 > **Candidate context:** The march-24 test showed Q6 (Koko bananas — binary search on answer) and Q7 (hash table implementation) were entirely skipped. Those topics are Day 8 and Day 9 content. Before moving to heaps, the first hour of Day 13 closes those two gaps explicitly.
+>
+> **New March 27 checkpoint evidence:** Stack/queue implementation, BST complexity, and bounds-based BST validation are still unstable. Do not move into the full heaps workload until `MyQueue`, balanced-vs-unbalanced BST complexity, and `isValidBST` with propagated bounds are working from memory.
 
 **Carry-over block (1hr) — mandatory, closes march-24 gaps**
 - **Binary search on answer pattern** (30 min): Re-read Q6 from march-24. Implement `minEatingSpeed` from scratch. Write out the invariant: "when `canFinish` returns true, set `high = mid` not `high = mid - 1`." Understand why.
@@ -898,9 +900,9 @@ Answer each of the following in writing (2–3 sentences each). No looking up:
 | 8 | Searching | — | — |
 | 9 | Hash Tables | — | — |
 | 10 | Linked Lists | ✅ Completed (march-24 test: 58/100) | Carry-over to Day 13: hash table bugs (Q7, 0/12) and LRU cache (Q8, 0/8). Complexity justification thin across all sections. |
-| 11 | Stacks & Queues (ADAPTED) | — | Mandatory: fix `peek()` implementation from march-15 Q10 |
-| 12 | Trees & BST (ADAPTED) | — | — |
-| 13 | Heaps + carry-over: binary search on answer + hash table (RESTRUCTURED) | — | — |
+| 11 | Stacks & Queues (ADAPTED) | ❌ Fail (march-27 checkpoint: 21/45 in Section A, overall 48/100) | Repeat stack/queue implementation: `push(item)` correctness, queue using two stacks, monotonic stack tracing, amortized O(1) explanation. |
+| 12 | Trees & BST (ADAPTED) | ⚠️ Partial (march-27 checkpoint: 27/55 in Section B) | Traversals and `maxDepth` show promise, but carry over BST complexity, degeneration examples, and bounds-based `isValidBST`. |
+| 13 | Heaps + carry-over: binary search on answer + hash table (RESTRUCTURED) | — | Start with march-27 recovery: `MyQueue`, monotonic stack indices, BST complexity, and bounds-based `isValidBST`; only then continue the original Day 13 carry-over block. |
 | 14 | LRU Cache fix + Graph Representation (RESTRUCTURED) | — | — |
 | 15 | Graph Algorithms (ADAPTED) | — | — |
 | 16 | Dynamic Programming (ADAPTED) | — | Memoize wrapper — failed in march-13, march-15 |
