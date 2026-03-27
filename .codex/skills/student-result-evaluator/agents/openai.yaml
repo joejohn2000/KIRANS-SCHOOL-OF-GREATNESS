@@ -1,0 +1,7 @@
+interface:
+  display_name: "Student Result Evaluator"
+  short_description: "Score tests and evolve the plan"
+  default_prompt: "Use $student-result-evaluator to score the student's completed test, write evaluation-score.md, then update plan.md and progress-card.md from the new evidence."
+
+policy:
+  allow_implicit_invocation: true

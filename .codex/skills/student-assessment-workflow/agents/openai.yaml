@@ -1,0 +1,7 @@
+interface:
+  display_name: "Student Assessment Workflow"
+  short_description: "Create and update student test bundles"
+  default_prompt: "Use $student-assessment-workflow to draft a dated assessment bundle from plan.md and the prior test evidence."
+
+policy:
+  allow_implicit_invocation: true
