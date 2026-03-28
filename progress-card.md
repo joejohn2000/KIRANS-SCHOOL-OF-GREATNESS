@@ -10,6 +10,7 @@ This file is a running memory of the student's strengths, weaknesses, and learni
 - March 22, 2026: Days 1-7 review (`tests/march-22`, plus documented score in `progress-card-march-22.md`)
 - March 22/23, 2026: Medium tricky focus answers (`tests/march-22-2nd`)
 - March 27, 2026: Day 11-12 checkpoint (`tests/march-27`)
+- March 28, 2026: March 27 recovery retest (`tests/march-27-2nd`)
 
 Note: `tests/march-23` and `tests/march-24` contain question papers / answer keys, but no clear student submission was found there, so they are not treated as performance evidence.
 
@@ -23,6 +24,7 @@ Note: `tests/march-23` and `tests/march-24` contain question papers / answer key
 | March 22, 2026 | Days 1-7 review | 70/100 | Satisfactory recovery in core fundamentals |
 | March 22/23, 2026 | Medium tricky focus | No official score file, but answers were mostly correct | Attention to detail improved, with a few edge-case misses still present |
 | March 27, 2026 | Day 11-12 checkpoint | 48/100 | Tree traversal and recursion showed progress, but stack/queue implementation and BST reasoning were not ready |
+| March 28, 2026 | March 27 recovery retest | 45/70 | Clear improvement after focused study, but queue correctness and exact BST validation still blocked a full pass |
 
 ## Current Snapshot
 
@@ -50,6 +52,7 @@ than at:
 - Sorting theory is better than sorting implementation.
 - Recent tricky-question performance suggests better attention to detail than the early tests.
 - Tree traversal order and basic recursive tree implementation are becoming reliable.
+- Focused remediation does help quickly when the weak area is narrow and concrete.
 
 ## Recurring Weaknesses
 
@@ -68,6 +71,7 @@ than at:
   wrong property names, wrong state updates, and incorrect method calls can break otherwise familiar patterns.
 - BST reasoning is mixed:
   traversals are good, but balanced-vs-unbalanced complexity and bounds-based validation are still unstable.
+- Small typos and off-by-one slips still turn near-correct answers into wrong final answers.
 
 ## Strongest Evidence-Based Topic Signals
 
@@ -79,6 +83,8 @@ than at:
   In the medium tricky focus paper, most answers were correct. The clearest remaining misses were an empty-array edge case (`Math.max(...[])`) and one microtask-order detail.
 - Trees: improving, but uneven.
   March 27 showed strong traversal recall and a mostly correct recursive `maxDepth`, but BST complexity and range-based validation still broke under pressure.
+- Recovery speed: encouraging, but not complete.
+  The March 28 retest showed the student can improve noticeably after a focus session, but exact queue correctness and typo-free BST validation are still the final blockers.
 
 ## Stable Memory for Future Teaching
 
@@ -100,12 +106,12 @@ than at:
 
 ## Priority Practice Next
 
-1. Stack and queue implementation drills:
-   property naming, `push(item)` correctness, queue using two stacks, and amortized O(1) explanation.
-2. BST complexity and degeneration drills:
-   balanced vs unbalanced complexity, insertion patterns, and concrete examples.
+1. Queue implementation drills:
+   exact property names, `peek()` return behavior, transfer logic, and amortized O(1) explanation.
+2. Exact trace discipline:
+   Daily Temperatures stack-of-indices tracing with no missing or shifted output slots.
 3. Bounds-based BST validation:
-   write `isValidBST` with propagated min/max limits and a concrete failing counterexample.
+   write `isValidBST` with a real failing counterexample and typo-free min/max propagation.
 4. Tree recursion explanations:
    keep reinforcing correct time/space complexity wording (`O(h)` vs worst-case `O(n)`).
 5. Closure implementation drills:
@@ -124,3 +130,7 @@ In short:
 March 27 reinforces the same meta-pattern:
 - tree reading and recursive structure are improving,
 - but stateful data-structure implementation and exact BST reasoning are still not stable enough to count as mastered.
+
+The March 28 retest adds one more useful signal:
+- the student responds well to targeted recovery,
+- but "almost correct" is still a real failure mode until the last typos and exact return values are cleaned up.
