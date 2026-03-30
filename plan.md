@@ -900,9 +900,9 @@ Answer each of the following in writing (2–3 sentences each). No looking up:
 | 8 | Searching | — | — |
 | 9 | Hash Tables | — | — |
 | 10 | Linked Lists | ✅ Completed (march-24 test: 58/100) | Carry-over to Day 13: hash table bugs (Q7, 0/12) and LRU cache (Q8, 0/8). Complexity justification thin across all sections. |
-| 11 | Stacks & Queues (ADAPTED) | ❌ Fail checkpoint, then ⚠️ Partial recovery on march-27 retest (45/70 overall) | `push(item)` improved, but `MyQueue` is still not exact enough: fix property names, `pop()` / `peek()` behavior, monotonic stack trace precision, and amortized O(1) explanation. |
-| 12 | Trees & BST (ADAPTED) | ⚠️ Partial, improving on march-27 retest | Traversals / recursion are stronger and BST complexity improved, but carry over real failing-counterexample work and typo-free bounds-based `isValidBST`. |
-| 13 | Heaps + carry-over: binary search on answer + hash table (RESTRUCTURED) | — | Before heaps: final micro-recovery on `MyQueue`, exact Daily Temperatures trace, and one fully correct `isValidBST`; only then continue the original Day 13 carry-over block. |
+| 11 | Stacks & Queues (ADAPTED) | ❌ Fail checkpoint, ⚠️ partial narrow recovery, then ❌ broad transfer miss on March 28 paper (30/100 overall) | Exact fresh implementations still break under pressure; keep stack/queue work narrow and exact before widening scope. |
+| 12 | Trees & BST (ADAPTED) | ⚠️ Partial, but not transferred cleanly to fresh paper | Traversal / BST reasoning are better than before, but fresh implementation still breaks; carry over `insertIntoBST` and typo-free `isValidBST`. |
+| 13 | Heaps + carry-over: binary search on answer + hash table (RESTRUCTURED) | ❌ Not ready to open fully | Do not widen to full Day 13 yet. First pass binary-search-on-answer, hash-table bug-fix, and bucket-based top-k as separate focused gates with no blanks. |
 | 14 | LRU Cache fix + Graph Representation (RESTRUCTURED) | — | — |
 | 15 | Graph Algorithms (ADAPTED) | — | — |
 | 16 | Dynamic Programming (ADAPTED) | — | Memoize wrapper — failed in march-13, march-15 |

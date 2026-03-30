@@ -11,6 +11,7 @@ This file is a running memory of the student's strengths, weaknesses, and learni
 - March 22/23, 2026: Medium tricky focus answers (`tests/march-22-2nd`)
 - March 27, 2026: Day 11-12 checkpoint (`tests/march-27`)
 - March 28, 2026: March 27 recovery retest (`tests/march-27-2nd`)
+- March 30, 2026: Broad fresh paper through Day 13 (`tests/march-28-2nd`)
 
 Note: `tests/march-23` and `tests/march-24` contain question papers / answer keys, but no clear student submission was found there, so they are not treated as performance evidence.
 
@@ -25,6 +26,7 @@ Note: `tests/march-23` and `tests/march-24` contain question papers / answer key
 | March 22/23, 2026 | Medium tricky focus | No official score file, but answers were mostly correct | Attention to detail improved, with a few edge-case misses still present |
 | March 27, 2026 | Day 11-12 checkpoint | 48/100 | Tree traversal and recursion showed progress, but stack/queue implementation and BST reasoning were not ready |
 | March 28, 2026 | March 27 recovery retest | 45/70 | Clear improvement after focused study, but queue correctness and exact BST validation still blocked a full pass |
+| March 30, 2026 | Broad fresh paper through Day 13 | 30/100 | Narrow recovery did not yet transfer to fresh questions, especially on Day 13 carry-over content |
 
 ## Current Snapshot
 
@@ -53,6 +55,7 @@ than at:
 - Recent tricky-question performance suggests better attention to detail than the early tests.
 - Tree traversal order and basic recursive tree implementation are becoming reliable.
 - Focused remediation does help quickly when the weak area is narrow and concrete.
+- Recognizes broad solution shapes even when final fresh implementations still break.
 
 ## Recurring Weaknesses
 
@@ -72,6 +75,8 @@ than at:
 - BST reasoning is mixed:
   traversals are good, but balanced-vs-unbalanced complexity and bounds-based validation are still unstable.
 - Small typos and off-by-one slips still turn near-correct answers into wrong final answers.
+- Transfer to fresh prompts is still weak:
+  the student improves on tightly targeted recovery, but performance drops when multiple patterns are mixed into a broader paper.
 
 ## Strongest Evidence-Based Topic Signals
 
@@ -85,6 +90,8 @@ than at:
   March 27 showed strong traversal recall and a mostly correct recursive `maxDepth`, but BST complexity and range-based validation still broke under pressure.
 - Recovery speed: encouraging, but not complete.
   The March 28 retest showed the student can improve noticeably after a focus session, but exact queue correctness and typo-free BST validation are still the final blockers.
+- Broad transfer: not ready yet.
+  The March 30 evaluation showed that fresh Day 13-style problems still expose major instability, especially binary-search-on-answer, hash-table debugging, and bucket-based top-k work.
 
 ## Stable Memory for Future Teaching
 
@@ -106,16 +113,16 @@ than at:
 
 ## Priority Practice Next
 
-1. Queue implementation drills:
-   exact property names, `peek()` return behavior, transfer logic, and amortized O(1) explanation.
-2. Exact trace discipline:
-   Daily Temperatures stack-of-indices tracing with no missing or shifted output slots.
-3. Bounds-based BST validation:
-   write `isValidBST` with a real failing counterexample and typo-free min/max propagation.
-4. Tree recursion explanations:
+1. Fresh exact queue / stack implementations:
+   `MyQueue`, `RecentCounter`, and `MinStack` with correct property names and return behavior.
+2. Fresh BST implementation drills:
+   `insertIntoBST` and typo-free `isValidBST`.
+3. Binary-search-on-answer from scratch:
+   helper predicate, monotonic condition, and correct `low/high` updates.
+4. Hash-table bug fixing and bucket-based top-k:
+   no blanks, no sorting-all-keys fallback.
+5. Tree recursion explanations:
    keep reinforcing correct time/space complexity wording (`O(h)` vs worst-case `O(n)`).
-5. Closure implementation drills:
-   module pattern, counter, memoize, curry, stack.
 6. Edge-case checklist habit before submitting any answer.
 
 ## Bottom Line
@@ -134,3 +141,7 @@ March 27 reinforces the same meta-pattern:
 The March 28 retest adds one more useful signal:
 - the student responds well to targeted recovery,
 - but "almost correct" is still a real failure mode until the last typos and exact return values are cleaned up.
+
+The March 30 broad paper adds a second useful signal:
+- narrow recovery is not yet generalizing,
+- so the next step should be structured transfer practice, not a wider jump into new material.
