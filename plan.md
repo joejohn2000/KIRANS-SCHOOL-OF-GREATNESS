@@ -900,15 +900,15 @@ Answer each of the following in writing (2–3 sentences each). No looking up:
 | 8 | Searching | — | — |
 | 9 | Hash Tables | — | — |
 | 10 | Linked Lists | ✅ Completed (march-24 test: 58/100) | Carry-over to Day 13: hash table bugs (Q7, 0/12) and LRU cache (Q8, 0/8). Complexity justification thin across all sections. |
-| 11 | Stacks & Queues (ADAPTED) | ❌ Fail checkpoint, ⚠️ partial narrow recovery, then ❌ broad transfer miss on March 28 paper (30/100 overall) | Exact fresh implementations still break under pressure; keep stack/queue work narrow and exact before widening scope. |
-| 12 | Trees & BST (ADAPTED) | ⚠️ Partial, but not transferred cleanly to fresh paper | Traversal / BST reasoning are better than before, but fresh implementation still breaks; carry over `insertIntoBST` and typo-free `isValidBST`. |
-| 13 | Heaps + carry-over: binary search on answer + hash table (RESTRUCTURED) | ❌ Not ready to open fully | Do not widen to full Day 13 yet. First pass binary-search-on-answer, hash-table bug-fix, and bucket-based top-k as separate focused gates with no blanks. |
-| 14 | LRU Cache fix + Graph Representation (RESTRUCTURED) | — | — |
-| 15 | Graph Algorithms (ADAPTED) | — | — |
-| 16 | Dynamic Programming (ADAPTED) | — | Memoize wrapper — failed in march-13, march-15 |
-| 17 | Strings (ADAPTED) | — | — |
-| 18 | Bit Manipulation + Complexity Justification (ADAPTED) | — | — |
-| 19 | OOP (ADAPTED) | — | Fix march-15 Q7 withdraw logic |
+| 11 | Stacks & Queues (ADAPTED) | ❌ Fail checkpoint, ⚠️ partial narrow recovery, then ❌ broad transfer misses on March 28 (30/100) and March 30 (40/100) fresh papers | Browser-history style state handling is still not exact; after back/visit, forward-history invariants must be drilled explicitly before widening scope. |
+| 12 | Trees & BST (ADAPTED) | ⚠️ Partial, but stronger than the surrounding topics on March 30 | LCA-in-BST reasoning is now a relative strength, but tree implementation precision still needs carry-over for full transfer confidence. |
+| 13 | Heaps + carry-over: binary search on answer + hash table (RESTRUCTURED) | ❌ Still not ready to open fully after March 30 cumulative review | Keep Day 13 narrow: binary-search-on-answer, hash-table / bucket thinking, and no-blanks enforcement remain active. |
+| 14 | LRU Cache fix + Graph Representation (RESTRUCTURED) | ⚠️ Partial on March 30 cumulative review | Graph representation and LRU refresh logic are visible, but BFS output and queue precision need another exact fresh check. |
+| 15 | Graph Algorithms (ADAPTED) | ❌ Fresh transfer miss on March 30 cumulative review | Topological sort was left blank; re-test in-degree plus queue directly before treating Day 15 as opened. |
+| 16 | Dynamic Programming (ADAPTED) | ⚠️ Partial on March 30 cumulative review | Rolling-DP structure is improving, but recurrence explanation and complexity justification still need tightening. |
+| 17 | Strings (ADAPTED) | ❌ Fresh transfer miss on March 30 cumulative review | Fixed-size sliding-window logic did not transfer; re-test permutation-in-string with frequency counts and exact control flow. |
+| 18 | Bit Manipulation + Complexity Justification (ADAPTED) | ⚠️ Partial on March 30 cumulative review | XOR implementation was correct, but trace quality and "why it works" explanation still need to become explicit and reliable. |
+| 19 | OOP (ADAPTED) | ⚠️ Partial on March 30 cumulative review | Inheritance / LSP direction is visible, but method contracts and thrown-error behavior still slip on exact implementation. |
 | 20 | System Design + Verbal Review (ADAPTED) | — | — |
 | 21 | HTML5 | — | — |
 | 22 | CSS Layouts | — | — |

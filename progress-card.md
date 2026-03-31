@@ -16,6 +16,7 @@ Use only actual student submissions and scored evaluations as evidence. Question
 | March 27, 2026 | Day 11-12 checkpoint (`tests/march-27/evaluation-score.md`) | 48/100 | Tree traversal and recursion improved; queue precision and BST validation were not ready. |
 | March 28, 2026 | Day 11-12 recovery gate (`tests/march-27-2nd/evaluation-score.md`) | 45/70 | Focused remediation helped; exact queue behavior and typo-free BST validation still failed the gate. |
 | March 30, 2026 | Evaluation of the March 28 fresh paper through Day 13 (`tests/march-28-2nd/evaluation-score.md`) | 30/100 | Narrow recovery did not transfer to fresh mixed prompts; Day 13 carry-over remains active. |
+| March 30, 2026 | Cumulative review through Day 19 (`tests/march-30/evaluation-score.md`) | 40/100 | Fresh transfer improved slightly, but broader mixed implementation still breaks; BST reasoning and XOR are improving faster than graph/string/Day 13 execution. |
 
 ## Current Read
 
@@ -43,6 +44,7 @@ than at:
 - Tree traversal orders are reliable.
 - Recursive tree structure is improving; `maxDepth` was mostly correct and the base-case idea is understood.
 - Pattern recognition is ahead of execution: the student often knows they need a hash map, two pointers, bounds, or a queue even when the final code breaks.
+- BST split-point reasoning and simple XOR-based missing-number work are now becoming more dependable than before.
 
 ## Improving But Not Yet Reliable
 
@@ -51,6 +53,7 @@ than at:
 - Monotonic-stack thinking is improving, but trace accuracy is not automatic yet.
 - Hash-map, top-k, and heap selection are visible at the concept level, but fresh Day 13 implementations are not ready.
 - Attention to detail is better than in the earliest tests, but it still collapses on broader fresh papers.
+- Rolling-DP structure is improving, but explanation quality still lags behind the code shape.
 
 ## Recurring Failure Modes
 
@@ -63,7 +66,7 @@ than at:
 - Complexity explanations are thinner than the final label.
   The student often writes `O(n)` or `O(log n)` without the supporting reason, and sometimes misses the `O(h)` vs worst-case `O(n)` distinction.
 - Blank or near-blank answers are still costly.
-  This happened in earlier evaluations and reappeared as skipped Day 13 work; the student needs an "always attempt" rule.
+  This happened in earlier evaluations, reappeared as skipped Day 13 work, and appeared again on the March 30 cumulative paper with a blank topological-sort answer; the student needs an "always attempt" rule.
 
 ## Historical Signals Worth Remembering
 
