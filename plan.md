@@ -909,7 +909,8 @@ Answer each of the following in writing (2–3 sentences each). No looking up:
 | 17 | Strings (ADAPTED) | ❌ Fresh transfer miss on March 30 cumulative review | Fixed-size sliding-window logic did not transfer; re-test permutation-in-string with frequency counts and exact control flow. |
 | 18 | Bit Manipulation + Complexity Justification (ADAPTED) | ⚠️ Partial on March 30 cumulative review | XOR implementation was correct, but trace quality and "why it works" explanation still need to become explicit and reliable. |
 | 19 | OOP (ADAPTED) | ⚠️ Partial on March 30 cumulative review | Inheritance / LSP direction is visible, but method contracts and thrown-error behavior still slip on exact implementation. |
-| 20 | System Design + Verbal Review (ADAPTED) | — | — |
+| 20 | System Design + Verbal Review + Deviation: Refactoring & Design Patterns (ADAPTED) | ❌ Fail (37/100) | Smell identification is reliable but technique naming consistently wrong; Factory Method, Observer, Decorator implementations were blank (25 marks lost); rate limiter broken in 5 places; system design concepts solid. Focus session required before Day 21. |
+| 20.5 | FOCUS SESSION: Refactoring techniques vs smells + Factory/Observer/Decorator from scratch + Rate Limiter fix | — | Gate required before Day 21. Pass = write all 3 patterns from blank page with correct technique names. |
 | 21 | HTML5 | — | — |
 | 22 | CSS Layouts | — | — |
 | 23 | JS Deep Dive | — | — |

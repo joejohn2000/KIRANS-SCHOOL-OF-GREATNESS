@@ -17,13 +17,15 @@ Use only actual student submissions and scored evaluations as evidence. Question
 | March 28, 2026 | Day 11-12 recovery gate (`tests/march-27-2nd/evaluation-score.md`) | 45/70 | Focused remediation helped; exact queue behavior and typo-free BST validation still failed the gate. |
 | March 30, 2026 | Evaluation of the March 28 fresh paper through Day 13 (`tests/march-28-2nd/evaluation-score.md`) | 30/100 | Narrow recovery did not transfer to fresh mixed prompts; Day 13 carry-over remains active. |
 | March 30, 2026 | Cumulative review through Day 19 (`tests/march-30/evaluation-score.md`) | 40/100 | Fresh transfer improved slightly, but broader mixed implementation still breaks; BST reasoning and XOR are improving faster than graph/string/Day 13 execution. |
+| April 3, 2026 | Day 20 + Refactoring & Design Patterns deviation (`tests/april-3/evaluation-score.md`) | 37/100 | Smell identification from code is reliable (75% on Q1); system design concepts are solid (65%); but pattern implementation was entirely blank (Q5, Q6 = 0/25) and rate limiter code had 5 structural bugs. Technique name vs smell name confusion is now a documented recurring error. |
 
-## Current Read
+## Current Read (Updated April 3, 2026)
 
 The student is no longer in a "blank beginner" state. The durable pattern now is:
 - concept recognition and tracing improve faster than exact implementation,
 - narrow remediation works,
-- but transfer to fresh mixed prompts still breaks quickly.
+- but transfer to fresh mixed prompts still breaks quickly,
+- and the concept-code gap now shows up in new domains (refactoring, design patterns) exactly as it did in algorithms — confirming this is a learning-style pattern, not a topic-specific one.
 
 Right now, the student is more reliable at:
 - identifying the intended pattern,
@@ -54,6 +56,12 @@ than at:
 - Hash-map, top-k, and heap selection are visible at the concept level, but fresh Day 13 implementations are not ready.
 - Attention to detail is better than in the earliest tests, but it still collapses on broader fresh papers.
 - Rolling-DP structure is improving, but explanation quality still lags behind the code shape.
+
+## New Signal (April 3)
+
+- **Smell vs technique name confusion is now a documented recurring error.** The candidate consistently names the smell (e.g. "Long Method", "Switch Statements") when asked for the technique ("Extract Method", "Replace Type Code with Subclasses"). These are different things and must be drilled as a pair.
+- **Pattern implementation: can describe, cannot yet build.** Factory Method, Observer, and Decorator were correctly categorised but left entirely blank when asked for working code. Same profile as the algorithm work — vocabulary ahead of blank-page execution.
+- **System design concepts are a relative strength.** CAP theorem, caching, vertical vs horizontal scaling were all answered with real understanding. This is the most reliable new domain so far.
 
 ## Recurring Failure Modes
 
