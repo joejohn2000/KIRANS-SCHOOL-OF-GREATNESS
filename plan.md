@@ -602,286 +602,476 @@ Start by fixing your march-15 Q7 `withdraw` bug as a class:
 
 ---
 
-### Day 20 — System Design Basics + Full Verbal Review ⚠️ ADAPTED
-**Objective**: Learn system design vocabulary and consolidate the verbal explanation habit built across Days 11–19
+### Day 20 — System Design + Refactoring + Design Patterns Deviation ✅ COMPLETED
+**Date completed:** April 3, 2026
+**Result:** 37/100 — focus session triggered (`tests/april-3/`)
+**Focus gate:** In progress — `tests/april-3-2nd/` (38/50 required to advance)
 
-> **Candidate context:** System design is new territory. The risk given your test pattern is that you engage with the concepts but skip the verbal/written part. Day 20 reverses the ratio: 1hr of new content, 1hr of design practice, and 1hr of verbal review of the past 10 days. The verbal review is not optional.
+**What was assessed:**
+- System design vocabulary (CAP, caching, scalability, SQL vs NoSQL) — strongest section (65%)
+- Refactoring catalog: smell identification reliable (75%), technique naming consistently wrong
+- Design pattern classification: category recognition partial, participant roles skipped
+- Pattern implementation (Factory Method, Observer, Decorator): entirely blank — 25 marks lost
+- Rate limiter: approach correct, implementation broken in 5 places
 
-**Learning (1hr) — core vocabulary only**
-- Scalability: vertical vs horizontal scaling — one concrete difference
-- Latency vs throughput — define both, give a concrete example of a trade-off
-- Caching: cache-aside pattern — when does a cache miss happen and what then?
-- CAP theorem: consistency, availability, partition tolerance — pick two. One real database per pair:
-  - CP: HBase (consistent + partition-tolerant, sacrifices availability)
-  - AP: Cassandra (available + partition-tolerant, sacrifices consistency)
-  - CA: PostgreSQL (consistent + available, no partition tolerance — single node)
-- SQL vs NoSQL: when each fits — 2 sentences each
+**Carry-over into Day 21:**
+- Must name technique (not smell) when asked for the refactoring action
+- Must write Factory Method, Observer, Decorator from a blank page
+- Rate limiter: understand and fix all 5 bugs from the original submission
 
-**Practice (2hrs)**
-- Design a URL shortener in writing: components, API (`POST /shorten`, `GET /:code`), database schema, how you'd scale it to 10M users
-- Implement a sliding window rate limiter in JavaScript: `allow(userId)` returns true/false. Max 5 requests per 10 seconds per user. Use a `Map<userId, timestamps[]>`.
-- Write the trade-offs for both designs as bullet points — at least 3 trade-offs per design
+---
 
-**Review (1hr) — mandatory verbal review of Days 11–19**
-Answer each of the following in writing (2–3 sentences each). No looking up:
-1. What is the difference between a stack and a queue? Give a use case for each.
-2. What is the in-order traversal of a BST and why is it sorted?
-3. What is the heap property? Why is heap insert O(log n)?
-4. What is the LRU cache bug you fixed — why does `map.set` alone fail?
-5. What is the sliding window template — write it from memory.
-6. What is the `memoize` wrapper — write it from memory.
-7. Pick the hardest complexity justification you did on Day 18 and repeat it.
+### Day 21 — Design Patterns: Consolidation Gate + Strategy + Adapter ⚠️ GATED
+**Prerequisite:** Pass focus gate (`tests/april-3-2nd/`) at 38/50 before starting this day.
+If the gate is failed: spend 30 min on the one weakest pattern from the gate, then advance regardless — do not stay blocked here another full day.
+
+**Objective:** Lock in Factory Method, Observer, and Decorator through fresh scenarios. Add Strategy and Adapter.
+
+> **Candidate context:** The focus session gave you the exact code shapes. Day 21 uses different scenarios for all three patterns — same shape, different context. If the pattern only works on the drill example, it has not transferred. The ratio today is 20 min reading, 2.5 hrs writing.
+
+**Verbal check (15 min) — mandatory before anything else**
+Write from memory, no notes:
+1. Name the three participants in the Observer pattern.
+2. Name the three participants in the Factory Method pattern.
+3. Name the three participants in the Decorator pattern.
+If you cannot answer these, read for 10 minutes, then answer from memory. Do not start drills until you can.
+
+**Learning (30 min) — two new patterns only**
+
+*Strategy Pattern*
+- Intent: define a family of algorithms, put each in its own class, make them interchangeable at runtime
+- Participants: Context (holds a strategy reference and delegates to it), Strategy (the interface), ConcreteStrategy (one specific implementation)
+- When to use: multiple ways to do the same operation (sort algorithms, shipping cost calculators, payment methods) and you need to switch without if/else
+
+*Adapter Pattern*
+- Intent: convert the interface of a class into the interface a client expects — a wrapper that translates
+- Participants: Target (the interface the client wants), Adaptee (the existing class with the wrong interface), Adapter (wraps Adaptee, implements Target)
+- When to use: integrating a third-party library or legacy class that does not fit your interface
+
+**Implementation drills (2.5 hrs)**
+
+Before each drill: write the class signatures (constructor + method names only), then fill in the bodies. This prevents the blank-page freeze.
+
+*Drill 1 — Strategy (45 min)*
+Build a `Sorter` class that can sort an array using interchangeable strategies. Create two concrete strategies: `BubbleSortStrategy` and `QuickSortStrategy`. The `Sorter.sort(array)` method delegates entirely to whichever strategy is currently set. The client code should be able to swap strategies at runtime without modifying `Sorter`.
+
+Before coding: write the algorithm in 2 sentences — what does the Context hold and what does it call?
+
+*Drill 2 — Adapter (45 min)*
+You have a `LegacyLogger` class with a method `writeLog(message, level)`. Your new system expects all loggers to implement `log({ message, severity })`. Write an `Adapter` that wraps `LegacyLogger` and implements the new interface.
+
+Before coding: identify which is the Target, which is the Adaptee, and what the Adapter must translate.
+
+*Drill 3 — Fresh Observer (30 min)*
+Write a `NewsPublisher` that notifies subscribers whenever a new article is published. Two concrete observers: `EmailSubscriber` (logs `[Email] New article: {title}`) and `AppNotification` (logs `[App] Breaking: {title}`). The publisher must support `subscribe`, `unsubscribe`, and `publish(title)`.
+
+*Drill 4 — Fresh Factory Method (30 min)*
+Write a `CompressionFactory` with three strategies: `ZipCompressor`, `GzipCompressor`, `BrotliCompressor`. Each has a `compress(data)` method. Client code should only call `CompressionFactory.create(type)` — never `new ZipCompressor()` directly.
 
 **Verification Gate**
 
-*Coding challenge*: Implement a sliding window rate limiter in JavaScript: `allow(userId)` — max N requests per window of W milliseconds. Prune timestamps older than W on each call. State time and space complexity with justification.
+*Coding challenge*: Write a `Router` class using the Strategy pattern. It holds a routing strategy and a `findRoute(start, end)` method that delegates to it. Create two concrete strategies: `FastestRoute` (logs `"Taking fastest route from X to Y"`) and `ScenicRoute` (logs `"Taking scenic route from X to Y"`). Show the router switching strategies at runtime without modifying the `Router` class.
 
-*Written explanation (mandatory)*: Explain the CAP theorem. Give a real database as an example of each pair (CP, AP, CA) and justify why it sits in that category. Then answer: in your URL shortener design, what is the bottleneck at 10M users and how would you address it?
-
----
-
-## Phase 4: Web Development (Days 21–25)
+*Written explanation*: What is the difference between the Strategy pattern and the Factory Method pattern? They both involve swapping implementations — name the one key distinction. Give one real scenario where Strategy is clearly the better choice and one where Factory Method is clearly the better choice.
 
 ---
 
-### Day 21 — HTML5 & Accessibility
-**Objective**: Write semantic, accessible HTML
+### Day 22 — Web Fundamentals I: HTML5 + CSS3 (Compressed)
+**Objective:** Write semantic, accessible HTML and build real layouts with Flexbox and Grid.
 
-**Learning (2hrs)**
-- Semantic elements: `header`, `nav`, `main`, `section`, `article`, `aside`, `footer`
-- Forms: input types, `label`, validation attributes, `fieldset`
-- ARIA roles and attributes: `aria-label`, `aria-describedby`, `role`
+> **Candidate context:** HTML and CSS are less algorithmically demanding than everything you have done in the last 21 days. The goal is working, semantic output — not memorising every property. Move at pace. If a section feels obvious, test yourself and move on. The verbal check here matters because the most common mistake is using `div` for everything.
+
+**Verbal check (10 min)**
+Write from memory:
+1. Name 5 semantic HTML elements and the non-semantic `<div>` they replace.
+2. What is the difference between `justify-content` and `align-items` in Flexbox?
+3. When would you use CSS Grid over Flexbox?
+
+**Learning (1 hr)**
+
+*HTML5 (30 min)*
+- Semantic elements: `header`, `nav`, `main`, `section`, `article`, `aside`, `footer` — one use case each
+- Forms: `label` + `input` associated by `for`/`id`, HTML5 validation (`required`, `type`, `minlength`, `pattern`)
+- ARIA: `aria-label`, `aria-describedby`, `role` — when each applies and when semantic HTML makes them unnecessary
 - Accessibility tree, tab order, focus management
 
-**Practice (2hrs)**
-- Build an accessible contact form with: name, email, message, submit
-  - Use correct label associations
-  - Add HTML5 validation (required, type, minlength)
-  - Add ARIA attributes for custom error messages
-- Mark up a blog post using semantic HTML (no `div` soup)
+*CSS3 (30 min)*
+- Flexbox: `flex-direction`, `justify-content`, `align-items`, `flex-wrap`, `flex-grow`, `flex-shrink`
+- Grid: `grid-template-columns`, `gap`, `fr` unit, `auto-fit` + `minmax`, `grid-area`
+- Responsive: `@media` queries, mobile-first approach
+- When to reach for Flexbox (1D layout) vs Grid (2D layout)
 
-**Review (1hr)**
-- Run your form through the browser's accessibility inspector
+**Implementation drills (2.5 hrs)**
+
+*Build 1 (1 hr): Accessible contact form*
+- Fields: name, email, message, submit
+- Every input has a `<label>` correctly associated by `for`/`id`
+- HTML5 validation: `required`, `type="email"`, `minlength="10"` on message
+- One ARIA attribute used correctly (your choice — justify it in a comment)
+- No `<div>` wrapping labels that a `<fieldset>` should handle
+
+*Build 2 (1 hr): Responsive 3-column card grid*
+- Desktop: 3 equal columns
+- Tablet (≤768px): 2 columns
+- Mobile (≤480px): 1 column
+- Use CSS Grid with `auto-fit` and `minmax` — not three separate media queries
+- Each card: image placeholder, name, price, button
+
+*Build 3 (30 min): Flexbox navigation bar*
+- Logo on the left, 4 links on the right
+- Links spread evenly using Flexbox
+- On mobile (≤600px): links stack vertically
 
 **Verification Gate**
 
-*Coding challenge*: Write a semantic HTML page for a product listing. Include: a nav with 3 links, a main section with 3 product cards (image, name, price, "Add to cart" button), and a footer. No `div` used where a semantic element fits.
+*Coding challenge*: Build a semantic product listing page from scratch. Must include: a `<nav>` with 3 links, a `<main>` with 3 product cards laid out in a CSS Grid (responsive), and a `<footer>` with a copyright line. No `<div>` where a semantic element fits. All interactive elements are keyboard accessible.
 
-*Written explanation*: What is the difference between `aria-label` and `aria-describedby`? Why does semantic HTML improve accessibility even without ARIA?
+*Written explanation*: What is the difference between `aria-label` and `aria-describedby`? Give a concrete example of when you would use each. Why does semantic HTML improve accessibility even without any ARIA attributes?
 
 ---
 
-### Day 22 — CSS3 Layouts: Flexbox & Grid
-**Objective**: Build any layout using Flexbox and Grid confidently
+### Day 23 — JavaScript in the Browser: DOM, Events, Fetch, Async/Await
+**Objective:** Manipulate the DOM, handle events correctly, and use Fetch with async/await.
 
-**Learning (2hrs)**
-- Flexbox: `flex-direction`, `justify-content`, `align-items`, `flex-wrap`, `flex-grow/shrink/basis`
-- CSS Grid: `grid-template-columns/rows`, `grid-area`, `gap`, `fr` unit, `auto-fit`/`auto-fill`
-- Responsive design: `@media` queries, mobile-first approach
-- When to use Flexbox (1D) vs Grid (2D)
+> **Candidate context:** This day reconnects your JavaScript foundations to the browser. The event loop knowledge from Day 3 applies directly to async/await. The closure knowledge from Day 2 applies to event handler scope. Do not skip the verbal check — the event loop and closure gaps from the early weeks are exactly what this day tests.
 
-**Practice (2hrs)**
-- Build a responsive 3-column card layout that collapses to 1 column on mobile (Grid)
-- Build a navbar with logo left, links right, centered on mobile (Flexbox)
-- Recreate a holy grail layout: header, footer, 3-column middle (Grid)
+**Verbal check (15 min) — mandatory**
+Write from memory:
+1. What is the event loop? Why does `setTimeout(fn, 0)` not always run immediately after the current line?
+2. What is the difference between a Promise and async/await? Are they different technologies or the same?
+3. What does `event.preventDefault()` do and name one situation where you need it?
+4. In a closure created inside a `for` loop, what value does the closed-over variable hold if you use `var`? Why?
 
-**Review (1hr)**
-- Without looking at docs: write the CSS for centering a div both horizontally and vertically using Flexbox
+**Learning (1 hr)**
+- DOM: `querySelector`, `querySelectorAll`, `createElement`, `appendChild`, `remove()`, `innerHTML` vs `textContent` (and why `innerHTML` is risky)
+- Events: `addEventListener`, event bubbling, event delegation, `event.target` vs `event.currentTarget`
+- Promises: the `.then()` / `.catch()` / `.finally()` chain
+- Fetch API: `fetch(url)` → `.json()`, error handling (why a 404 does NOT reject the Promise)
+- `async/await`: syntax sugar over Promises, `try/catch` for errors, `await Promise.all([...])` for parallel
+- Why callback hell → Promises → async/await was a progression in the language
 
-**Verification Gate**
+**Implementation drills (2 hrs)**
 
-*Coding challenge*: Build a responsive photo gallery using CSS Grid. 4 columns on desktop, 2 on tablet, 1 on mobile. Each card has an image placeholder, a title, and a description. No JS, pure CSS.
+*Drill 1 (45 min): Live search filter*
+- Render a hardcoded list of 10 items from a JS array into the DOM
+- An `<input>` at the top that filters the list live as the user types (no page reload)
+- The filter is case-insensitive
+- After: explain in a comment why you did NOT attach one listener per list item
 
-*Written explanation*: When would you choose CSS Grid over Flexbox for a layout? Give a concrete layout example for each.
+*Drill 2 (45 min): Fetch + render*
+- Fetch from `https://jsonplaceholder.typicode.com/users` on page load
+- Render each user's name and email as a card
+- Show a "Loading..." state while the fetch is in progress
+- Show an error message if the fetch fails — do NOT let the app crash silently
+- Use async/await, not `.then()` chains
 
----
-
-### Day 23 — JavaScript Deep Dive
-**Objective**: Understand JS internals that trip up senior engineers
-
-**Learning (2hrs)**
-- Closures: practical use cases (module pattern, factory functions, memoization)
-- Prototypal inheritance: `prototype`, `__proto__`, `Object.create()`
-- Event loop: call stack, web APIs, callback queue, microtask queue
-- Promises, async/await, error handling
-- `this` binding: implicit, explicit (`call`/`apply`/`bind`), arrow functions
-
-**Practice (2hrs)**
-- Implement a memoize utility function using closures
-- Predict and explain the output of 5 event loop puzzles (mix of setTimeout, Promises)
-- Implement `Promise.all` from scratch
-- Write a module using the revealing module pattern
-
-**Review (1hr)**
-- Draw the event loop with call stack, task queue, and microtask queue on a specific code snippet
+*Drill 3 (30 min): Event delegation*
+- A `<ul>` with dynamically added list items, each containing a "Delete" button
+- Use a single `addEventListener` on the `<ul>`, not one per button
+- Write a comment explaining how `event.target` lets you identify which button was clicked
 
 **Verification Gate**
 
-*Coding challenge*: Implement `memoize(fn)` — a function that takes any function and returns a memoized version that caches results based on arguments.
+*Coding challenge*: Build a comment section. A `<textarea>` and a "Post" button. On click: add the comment as a `<li>` to a `<ul>`, clear the textarea, and prevent default form submission. Each `<li>` has a "Delete" button that removes only that item. Use event delegation for all delete buttons — one listener total on the `<ul>`.
 
-*Written explanation*: What is the difference between the microtask queue and the macrotask queue in the JS event loop? Given `setTimeout(fn, 0)` and `Promise.resolve().then(fn)`, which runs first and why?
+*Written explanation*: What is the difference between `event.target` and `event.currentTarget`? Trace through your event delegation solution and explain which one you used and why the other would not work.
 
 ---
 
 ### Day 24 — React Fundamentals
-**Objective**: Build React UIs with hooks confidently
+**Objective:** Build interactive UIs with components, state, props, and useEffect.
 
-**Learning (2hrs)**
-- JSX and how it compiles
-- Component model: functional components, props, composition
-- `useState`: state updates, batching, stale closures
-- `useEffect`: dependencies array, cleanup, common mistakes
-- Virtual DOM and reconciliation
-- Controlled vs uncontrolled components
+> **Candidate context:** React is a shift in mental model — the UI is a function of state, not a sequence of DOM mutations. When state changes, React re-renders the component. Think of each component as a pure function: same props and state in, same output. Build first, read second — the mental model clicks through building, not through reading.
 
-**Practice (2hrs)**
-- Build a todo app: add, complete, delete todos using `useState`
-- Add a filter (All / Active / Completed) using derived state (no extra state variable)
-- Add a `useEffect` that saves todos to `localStorage` and loads on mount
-- Build a custom hook `useLocalStorage(key, initialValue)`
+**Verbal check (10 min)**
+Write from memory (if you cannot answer these, read for 10 minutes then answer — do not start drills until you can):
+1. What is the difference between props and state? Which one can a component change?
+2. When does `useEffect` run? What does the dependency array `[]` mean vs `[value]` vs no array at all?
 
-**Review (1hr)**
-- Explain to yourself why each `useEffect` in your app has the dependency array it does
+**Learning (1 hr)**
+- JSX and why `React.createElement` is what it compiles to
+- Functional components and the component tree
+- `useState`: declaration, update, why updates are asynchronous (batching)
+- `useEffect`: run on mount, on update, cleanup function on unmount
+- Props: passing data down, why props flow one direction
+- Lifting state up: when two sibling components need the same data
+- Conditional rendering: `&&` operator, ternary
+- Lists and the `key` prop: why React needs it and what happens without it
+- Controlled inputs: `value` from state + `onChange` handler
 
-**Verification Gate**
+**Implementation drills (2.5 hrs)**
 
-*Coding challenge*: Build a search-filtered list in React. It fetches a list of 20 names (you can hardcode them) and filters in real-time as the user types. Use `useState` and a controlled input.
+*Build 1 (1 hr): Counter with history*
+- A number display, an increment button, a decrement button, a reset button
+- Below the counter: a list of every value the counter has held, in order
+- All state in a single component
+- The history must update correctly even when reset is pressed
 
-*Written explanation*: What happens when you omit a dependency from a `useEffect` dependency array? Describe a specific stale closure bug this causes and how to fix it.
+*Build 2 (1 hr): Fetch + React*
+- `useEffect` fetches `https://jsonplaceholder.typicode.com/posts?_limit=5` on mount
+- Renders posts as cards (title + body)
+- A "Refresh" button that triggers a new fetch
+- Three UI states handled: loading, success, error
 
----
-
-### Day 25 — Node.js & REST API Design
-**Objective**: Build a working REST API with Express
-
-**Learning (2hrs)**
-- Node.js event loop vs browser event loop
-- Express: `app`, middleware, routing, error handling
-- REST principles: resources, HTTP verbs, status codes, idempotency
-- Request/response lifecycle
-- Middleware pattern: logging, auth, validation
-
-**Practice (2hrs)**
-- Build a REST API for a `tasks` resource:
-  - `GET /tasks` — list all
-  - `POST /tasks` — create
-  - `GET /tasks/:id` — get one
-  - `PUT /tasks/:id` — update
-  - `DELETE /tasks/:id` — delete
-- Add a logging middleware that logs method + path + response time
-- Add basic input validation middleware for `POST /tasks`
-
-**Review (1hr)**
-- Test every endpoint with curl or Postman
+*Build 3 (30 min): Controlled form with list*
+- Name + email inputs, both controlled
+- Submit adds the entry to a list displayed below
+- Inputs clear after submit
+- If either field is empty, show an inline error and do not add the entry
 
 **Verification Gate**
 
-*Coding challenge*: Add authentication middleware to your tasks API. Every route requires a Bearer token in the `Authorization` header. If missing or wrong, return 401. If valid, attach a `user` object to `req` and proceed.
+*Coding challenge*: Build a Todo app. Requirements: add a task via a controlled input + button, mark a task complete (toggle line-through style), delete a task, show a count of incomplete tasks remaining. All state in a single parent component. No external libraries or frameworks beyond React.
 
-*Written explanation*: What is middleware in Express? Explain the `(req, res, next)` pattern. What happens if you forget to call `next()` in a middleware?
-
----
-
-## Phase 5: Practice & Integration (Days 26–30)
+*Written explanation*: Explain "lifting state up." In your Todo app, why does the full task list live in the parent and not inside each individual Todo item component? What would break if each item managed its own "completed" state independently?
 
 ---
 
-### Day 26 — Algorithm Practice: Arrays, Strings, Hash Maps
-**Objective**: Solve medium problems fluently
+### Day 25 — Node.js + REST API with Express
+**Objective:** Build a working REST API and connect it to the React frontend from Day 24.
 
-**Approach**: For each problem, before coding write: (1) approach in English, (2) time/space complexity, (3) edge cases
+> **Candidate context:** Node.js is JavaScript on the server. The patterns are identical — functions, modules, async/await. The new concept is the request/response cycle and middleware. Start with the shape of an Express app, then add complexity layer by layer. Do not try to understand all of Express before writing the first route.
 
-**Problems**
-- LeetCode [#15 3Sum](https://leetcode.com/problems/3sum/) (two-pointer)
-- LeetCode [#11 Container With Most Water](https://leetcode.com/problems/container-with-most-water/)
-- LeetCode [#238 Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/)
-- LeetCode [#560 Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)
-- LeetCode [#567 Permutation in String](https://leetcode.com/problems/permutation-in-string/) (sliding window)
+**Verbal check (10 min)**
+Write from memory:
+1. What is middleware in Express? What do `req`, `res`, and `next` represent?
+2. What is the difference between `GET` and `POST`? Name one situation where you must use POST rather than GET.
+3. What does `res.json()` do that `res.send()` does not?
+
+**Learning (1 hr)**
+- Node.js module system: `require` / `module.exports` vs ES module `import/export`
+- Express: `app.get`, `app.post`, `app.put`, `app.delete`, `app.use`
+- Middleware: `express.json()` (body parsing), custom middleware, `next()` and what happens if you forget to call it
+- Route parameters: `req.params`, `req.body`, `req.query`
+- Error handling middleware: the four-argument form `(err, req, res, next)`
+- CORS: why it exists, how the `cors` package fixes it for local development
+- HTTP status codes: 200, 201, 400, 401, 404, 500 — one use case each
+
+**Implementation drills (2 hrs)**
+
+*Build 1 (1.5 hrs): Tasks REST API*
+In-memory array as the data store (no database needed).
+- `GET /tasks` — return all tasks (200)
+- `POST /tasks` — create a new task (`{ title }` in body), return the created task (201)
+- `PUT /tasks/:id` — update task (`{ completed }` in body), return updated task (200), 404 if not found
+- `DELETE /tasks/:id` — remove task (204), 404 if not found
+- A custom 404 handler for all unmatched routes
+- `express.json()` middleware applied globally
+
+*Build 2 (30 min): Connect to your Day 24 React app*
+- Add `cors` middleware to the Express API
+- Point the React `fetch` calls at `http://localhost:3000`
+- Verify: add a task in the React UI, refresh the page — the task should still exist (it is in memory, so it will reset on server restart — that is fine for now)
 
 **Verification Gate**
 
-*Coding challenge*: LeetCode [#238 Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/). Solve without using division, in O(n) time.
+*Coding challenge*: Add a reusable auth middleware to the Tasks API. It should check for an `Authorization: Bearer secret123` header. If the header is missing or the token is wrong, respond with `{ error: "Unauthorized" }` and status 401. Apply it only to `POST`, `PUT`, and `DELETE` routes — `GET` routes stay public. Write the middleware as a standalone function, not inline.
 
-*Written explanation*: Walk through your approach to [#238] before you see the solution. What prefix/suffix pattern did you identify?
-
----
-
-### Day 27 — Algorithm Practice: Trees & Graphs
-**Objective**: Pattern-match tree and graph problems quickly
-
-**Problems**
-- LeetCode [#236 Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/)
-- LeetCode [#297 Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/)
-- LeetCode [#210 Course Schedule II](https://leetcode.com/problems/course-schedule-ii/) (topological sort)
-- LeetCode [#417 Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/)
-
-**Verification Gate**
-
-*Coding challenge*: LeetCode [#236 Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/).
-
-*Written explanation*: Describe the recursive intuition behind finding the LCA — what does each recursive call return and why?
+*Written explanation*: What is middleware in Express? Explain the `(req, res, next)` pattern in your own words. What happens if a non-terminal middleware never calls `next()`? What is the difference between calling `next()` and calling `next(err)`?
 
 ---
 
-### Day 28 — System Design Practice
-**Objective**: Think through scalable systems end-to-end
+### Day 26 — Algorithm Implementation Sprint: Carry-Over Clearance ⚠️
+**Objective:** Close the active carry-overs from Days 13–17 through focused drilling, not testing.
 
-**Practice**
-- Design a Twitter-like feed system:
-  - Define user stories (post, follow, view feed)
-  - Choose data stores (why)
-  - Define API endpoints
-  - Address scale: 10M users, 100M tweets/day
-  - Identify bottlenecks
-- Design a notification system (push, email, SMS)
+> **Candidate context:** Topological sort, sliding window, DP, and graph BFS have been tested on four separate papers without fully transferring. This day is not a test — it is a deliberate practice session. You write each algorithm from scratch, trace it by hand, then write it again from memory in a different scenario. No score. No pass/fail. The goal is that tomorrow these feel automatic.
+
+**Rules for this day:**
+- Write the algorithm in plain English (2–3 sentences) before writing any code
+- After each implementation: trace it manually with a small example
+- After the trace: close your notes and write it again from scratch in a new scenario
+- Complexity justification required after every implementation — the label alone is not enough
+
+**Verbal check (15 min) — mandatory**
+Write from memory before any coding:
+1. Topological sort: name the two data structures it requires and why each is needed.
+2. Sliding window: what is the invariant? When does a fixed window slide vs when does a variable window shrink?
+3. DP climbing stairs: write the recurrence relation in one line before you write any code.
+4. BFS: why does a queue give you shortest path but DFS does not?
+
+**Drill block (3 hrs — 45 min each)**
+
+*Drill A — Topological Sort*
+Write `buildOrder(numCourses, prerequisites)` from scratch. Return a valid course order. Return `[]` if there is a cycle. Use in-degree + queue (Kahn's algorithm).
+
+Step 1: write the algorithm in English.
+Step 2: write the code.
+Step 3: trace for `numCourses=4, prerequisites=[[1,0],[2,0],[3,1],[3,2]]` — write out in-degree values and the queue state after each dequeue.
+Step 4: write it again from scratch in a new scenario (package build order, task scheduling — your choice).
+
+*Drill B — Sliding Window (both types)*
+Write `maxSumSubarray(nums, k)` — fixed window, return the maximum sum of any k consecutive elements.
+Write `longestSubstringWithoutRepeat(s)` — variable window.
+
+For each: state the invariant before coding. After coding: trace one example for each. State the time and space complexity with one sentence of justification.
+
+*Drill C — Dynamic Programming*
+Write `minCostClimbingStairs(cost)`. Write the recurrence first: `dp[i] = min(dp[i-1] + cost[i-1], dp[i-2] + cost[i-2])`. Then implement it.
+
+Then write `uniquePaths(m, n)` — how many ways to travel from top-left to bottom-right of an m×n grid moving only right or down. Write the recurrence first.
+
+*Drill D — Graph BFS*
+Write BFS that returns the shortest path (as an array of node values) between a start and end node in an unweighted undirected graph. If no path exists, return `[]`.
+
+After: explain in writing why Dijkstra would be needed if the edges had weights.
 
 **Verification Gate**
 
-*Coding challenge*: Implement an in-memory message queue in Python or JS. It supports `publish(topic, message)`, `subscribe(topic, callback)`, and `unsubscribe(topic, callback)`. Subscribers are called when a message is published to their topic.
+Three fresh LeetCode-style problems. Explanation-first required — write 2–3 sentences of approach before any code:
 
-*Written explanation*: In your Twitter design, if a celebrity has 10M followers and posts a tweet, how do you handle fan-out? Describe push model vs pull model and the trade-offs.
+1. [#210 Course Schedule II](https://leetcode.com/problems/course-schedule-ii/) — topological sort
+2. [#3 Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) — sliding window
+3. [#746 Min Cost Climbing Stairs](https://leetcode.com/problems/min-cost-climbing-stairs/) — DP
+
+For each: state time and space complexity with justification. No blanks — an incomplete solution with a clear explanation of what is missing scores more than silence.
 
 ---
 
-### Day 29 — Full-Stack Project
-**Objective**: Ship a complete CRUD application
+### Day 27 — System Design Deep Dive
+**Objective:** Move from system design vocabulary (Day 20) to trade-off reasoning backed by specific technology choices.
 
-**Build**: Task Manager App
-- **Backend** (Node.js/Express): CRUD API for tasks with auth middleware
-- **Frontend** (React): list, add, edit, complete, delete tasks
-- **Integration**: React fetches from your Express API
-- **Persistence**: in-memory or `localStorage` (no database required)
+> **Candidate context:** Day 20 showed you understand the concepts but give vague answers when pressed for specifics — no database names for CAP pairs, no concrete bottleneck analysis. Day 27 fixes that. Every answer must name a real technology and justify the choice in one sentence. Vague answers ("use a cache") score zero here.
+
+**Verbal check (15 min)**
+Write from memory:
+1. Name one CP database, one AP database, and one CA database. For each: what does it sacrifice and why is that acceptable in its typical use case?
+2. Explain the cache-aside pattern in 3 sentences. What happens on a cache miss?
+3. What is the difference between a message queue and a pub/sub system? Name a real technology for each.
+4. What is database sharding? What is the hardest problem it introduces?
+
+**Learning (1 hr) — depth on four specific concepts**
+- Load balancers: round-robin vs least-connections vs consistent hashing — when consistent hashing is essential (hint: stateful services)
+- Database read replicas: why they help reads, why they cannot help writes, replication lag
+- Message queues vs event streaming: RabbitMQ (queue — message consumed once) vs Kafka (stream — message replayed, ordered by partition)
+- CDN: what it caches (static assets, sometimes API responses), what it cannot cache (user-specific data), cache invalidation strategies
+
+**Design sessions (2 hrs)**
+
+*Design 1 (1 hr): URL Shortener at scale*
+Write the design in this exact order — do not skip steps:
+1. Functional requirements (2–3 bullet points)
+2. Non-functional requirements (scale targets: reads/writes per second)
+3. API design (`POST /shorten`, `GET /:code`)
+4. Data model (table name, columns, why you chose SQL or NoSQL)
+5. Components (load balancer, app servers, cache, database — draw as text diagram)
+6. Bottleneck analysis: where does the system break first at 10M users?
+7. Scaling decisions: name at least 3 concrete changes and justify each
+
+*Design 2 (1 hr): Notification system*
+Requirements: send push, email, and SMS notifications reliably. Retry on failure. Adding a new channel (e.g. Slack) must not require modifying the core dispatch logic.
+
+In your design: name the design pattern you are using for the channel abstraction. Name the queue technology. Explain what "at-least-once delivery" means and how you handle duplicate notifications.
 
 **Verification Gate**
 
-*Coding challenge*: Add optimistic UI updates to your React frontend — when a task is marked complete, update the UI immediately without waiting for the API response, then rollback if the request fails.
+*Design challenge*: Design a rate limiter as a distributed service (not in-memory). It must work correctly when deployed across 100 API servers. Name the data store and algorithm. Explain what happens if the data store goes down — does the system fail open or fail closed, and why?
 
-*Written explanation*: Explain the data flow in your app from user clicking "Add Task" to the task appearing in the list. Name every step: event handler → state → API call → response → re-render.
+*Written explanation*: What is the difference between horizontal scaling and database sharding? A read-heavy system (10:1 read/write ratio) is hitting database limits. Name two specific techniques you would apply (not "add more servers") and justify each in one sentence.
 
 ---
 
-### Day 30 — Mock Interview & Gap Analysis
-**Objective**: Simulate a real FAANG interview and identify remaining gaps
+### Day 28 — Full-Stack Integration Project
+**Objective:** Build a complete working application that connects HTML/CSS, React, Node/Express, and at least one design pattern.
 
-**Session 1 (2hrs) — Mock interview**
-- 45 min: two coding problems under time pressure (no hints, no searching)
-  - Pick randomly from your weakest problem tags
-- 45 min: system design question
-- 30 min: score yourself honestly
+> **Candidate context:** This is the first day you build something end-to-end without scaffolding or a question prompt telling you what to do. When you get stuck: write what you know, name the gap explicitly, and work around it. A partially working app you can explain is more valuable than a blank page. Commit to a scope and finish it — do not expand the scope mid-build.
 
-**Session 2 (2hrs) — Gap analysis**
-- Review every verification gate you failed over 30 days
-- List topics you still feel uncertain about
-- Write a prioritized next-30-day plan based on actual gaps
+**Project: Task Manager with Auth and Observer**
 
-**Session 3 (1hr) — Behavioral prep**
-- Write STAR answers for: biggest challenge, disagreement with a teammate, a project you're proud of
+Build a task manager app where:
+
+Backend (Express):
+- All CRUD routes from Day 25 (`GET`, `POST`, `PUT`, `DELETE` on `/tasks`)
+- Auth middleware on write routes (Bearer token)
+- `GET /tasks?completed=true/false` — filter by status
+- `createdAt` timestamp on every task
+
+Frontend (React):
+- Fetch all tasks on load
+- Add task via controlled form
+- Mark task complete / incomplete (toggle)
+- Delete a task
+- Filter tabs: "All", "Active", "Completed"
+- Handle loading, error, and empty states
+- Do not crash on API errors — show a message
+
+Design pattern requirement:
+- Use the Observer pattern in at least one place in the frontend state management or event handling
+- Document in a comment: what is the Subject, what is the Observer, what event triggers notification
 
 **Verification Gate**
 
-*Coding challenge*: Solve LeetCode [#23 Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) within 30 minutes.
+Demo the working app (or walk through the code if not fully deployed). Then answer in writing:
+1. Walk through the full data flow for "user clicks Add Task" — name every step from the click event to the task appearing in the list. Be specific: event handler → state update → API call → response → re-render.
+2. Where did you apply the Observer pattern? What would break if you removed it?
+3. Name one thing you would change if this app needed to support 10,000 concurrent users.
 
-*Written explanation*: Rate yourself 1–10 on each phase topic. Identify your three weakest areas. For each, write what specifically you don't understand and what you'll do in the next 30 days to fix it.
+---
+
+### Day 29 — Mock Interview Prep: Algorithm Problems + System Design Under Pressure
+**Objective:** Simulate interview conditions. Time pressure, no hints, explanation-first. This is a rehearsal for Day 30.
+
+> **Candidate context:** The rules change today. No looking things up mid-problem. No blanks. A broken partial solution with a clear explanation of where it breaks scores better than leaving a question unattempted. This is the one pattern from your test history that has cost the most marks — practice the habit of always writing something.
+
+**Session 1 (1.5 hrs) — Timed algorithm problems**
+20 minutes per problem. Write the approach (2–3 sentences) before any code.
+
+Choose 3 from the set based on your weakest carry-over areas:
+- [#207 Course Schedule](https://leetcode.com/problems/course-schedule/) — topological sort / cycle detection
+- [#3 Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) — sliding window
+- [#322 Coin Change](https://leetcode.com/problems/coin-change/) — DP
+- [#200 Number of Islands](https://leetcode.com/problems/number-of-islands/) — graph BFS/DFS
+- [#49 Group Anagrams](https://leetcode.com/problems/group-anagrams/) — hash map
+
+After each: state time and space complexity with justification. No label-only answers.
+
+**Session 2 (1 hr) — System design under time pressure**
+30 min: Design a real-time collaborative document editor (like Google Docs — simplified).
+- Start with: what are the two hardest technical problems?
+- Propose a data model and a conflict resolution strategy (you do not need to fully solve it — name the approach)
+- Name one technology you would use and why
+
+30 min: Debrief in writing — what did you state clearly, what did you skip, what would you add with 10 more minutes?
+
+**Session 3 (30 min) — Behavioral prep**
+Write STAR answers (Situation, Task, Action, Result) for:
+1. A time you had to learn something complex quickly under pressure
+2. A time you made a technical mistake and how you fixed it
+3. A project you are proud of and one thing you would do differently now
+
+---
+
+### Day 30 — Full Mock Interview + Gap Analysis + Next Plan
+**Objective:** Simulate a real FAANG-format interview. Score yourself honestly. Write the next 30 days.
+
+> **Candidate context:** This is a checkpoint, not a finish line. The most valuable output of Day 30 is not the interview score — it is the gap list. Be as specific about what broke as you would be in a post-incident review. Vague self-assessments ("I need more practice") are not acceptable here.
+
+**Session 1 (2 hrs) — Full mock interview**
+No notes. No looking up.
+- 45 min: Two coding problems from your weakest LeetCode tags (use your Day 29 self-assessment to pick)
+- 45 min: System design — design a distributed job scheduler (or any system design question you have not seen before)
+- 30 min: Score yourself against the following rubric:
+  - Did you explain your approach before coding?
+  - Did you name time and space complexity with justification?
+  - Did you check edge cases before submitting?
+  - Did you leave any blanks?
+  - Did you name specific technologies in the system design?
+
+**Session 2 (1.5 hrs) — Gap analysis**
+Review every gate result from Days 1–30. For each gate you failed or only partially passed:
+- Name the topic
+- Describe the specific failure mode (not "I struggled" — what exactly broke in the code or explanation?)
+- Write one concrete action to fix it in the next 30 days
+
+Produce a prioritised gap list with these three categories:
+1. Algorithm patterns that need more reps (name the specific tag)
+2. System design components that need deeper study (name the specific concept)
+3. Design patterns or OOP concepts that still break on blank-page implementation
+
+**Session 3 (30 min) — Next 30 days**
+Write a specific plan for the next 30 days based on your gap list. Must be concrete:
+- Which 3 LeetCode tags will you drill daily?
+- Which 2 system design case studies will you study in depth?
+- Which design patterns still need 3+ blank-page implementations before they are stable?
 
 ---
 
