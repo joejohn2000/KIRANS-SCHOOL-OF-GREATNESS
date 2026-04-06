@@ -1100,7 +1100,7 @@ Write a specific plan for the next 30 days based on your gap list. Must be concr
 | 18 | Bit Manipulation + Complexity Justification (ADAPTED) | ⚠️ Partial on March 30 cumulative review | XOR implementation was correct, but trace quality and "why it works" explanation still need to become explicit and reliable. |
 | 19 | OOP (ADAPTED) | ⚠️ Partial on March 30 cumulative review | Inheritance / LSP direction is visible, but method contracts and thrown-error behavior still slip on exact implementation. |
 | 20 | System Design + Verbal Review + Deviation: Refactoring & Design Patterns (ADAPTED) | ❌ Fail (37/100) | Smell identification is reliable but technique naming consistently wrong; Factory Method, Observer, Decorator implementations were blank (25 marks lost); rate limiter broken in 5 places; system design concepts solid. Focus session required before Day 21. |
-| 20.5 | FOCUS SESSION: Refactoring techniques vs smells + Factory/Observer/Decorator from scratch + Rate Limiter fix | — | Gate required before Day 21. Pass = write all 3 patterns from blank page with correct technique names. |
+| 20.5 | FOCUS SESSION: Refactoring techniques vs smells + Factory/Observer/Decorator from scratch + Rate Limiter fix | ❌ Gate not passed (23/50 — needed 38/50) | Factory Method structure transferred (major improvement from blank). Observer broken by property name mismatch + copy-paste error. Decorator fundamentally misunderstood (wrapping vs extending). Advancing to Day 21 regardless — carry-overs active: (1) Q1d Divergent Change → Extract Class, (2) property name mismatch habit, (3) Decorator wrapping concept. |
 | 21 | HTML5 | — | — |
 | 22 | CSS Layouts | — | — |
 | 23 | JS Deep Dive | — | — |

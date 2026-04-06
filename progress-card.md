@@ -18,6 +18,7 @@ Use only actual student submissions and scored evaluations as evidence. Question
 | March 30, 2026 | Evaluation of the March 28 fresh paper through Day 13 (`tests/march-28-2nd/evaluation-score.md`) | 30/100 | Narrow recovery did not transfer to fresh mixed prompts; Day 13 carry-over remains active. |
 | March 30, 2026 | Cumulative review through Day 19 (`tests/march-30/evaluation-score.md`) | 40/100 | Fresh transfer improved slightly, but broader mixed implementation still breaks; BST reasoning and XOR are improving faster than graph/string/Day 13 execution. |
 | April 3, 2026 | Day 20 + Refactoring & Design Patterns deviation (`tests/april-3/evaluation-score.md`) | 37/100 | Smell identification from code is reliable (75% on Q1); system design concepts are solid (65%); but pattern implementation was entirely blank (Q5, Q6 = 0/25) and rate limiter code had 5 structural bugs. Technique name vs smell name confusion is now a documented recurring error. |
+| April 3, 2026 (2nd) | Focus gate — patterns + rate limiter (`tests/april-3-2nd/evaluation-score.md`) | 23/50 (46%) | Factory Method structure transferred — went from 0 to a mostly-correct skeleton in one session (largest single improvement recorded). Observer broken by property name mismatch (same class of error as rate limiter the day before). Decorator wrapping concept still not understood. Property name mismatch is now a confirmed recurring habit across 3 answers on 2 consecutive papers. |
 
 ## Current Read (Updated April 3, 2026)
 
@@ -57,10 +58,12 @@ than at:
 - Attention to detail is better than in the earliest tests, but it still collapses on broader fresh papers.
 - Rolling-DP structure is improving, but explanation quality still lags behind the code shape.
 
-## New Signal (April 3)
+## New Signals (April 3 — two sessions)
 
-- **Smell vs technique name confusion is now a documented recurring error.** The candidate consistently names the smell (e.g. "Long Method", "Switch Statements") when asked for the technique ("Extract Method", "Replace Type Code with Subclasses"). These are different things and must be drilled as a pair.
-- **Pattern implementation: can describe, cannot yet build.** Factory Method, Observer, and Decorator were correctly categorised but left entirely blank when asked for working code. Same profile as the algorithm work — vocabulary ahead of blank-page execution.
+- **Factory Method structure transferred in one session.** After being entirely blank on April 3 morning, the candidate produced a mostly-correct Factory Method skeleton in the afternoon gate. This is the fastest single-session improvement recorded and confirms that the focused drill approach works for this student.
+- **Property name mismatch is now a confirmed recurring habit.** Appeared in 3 answers across 2 consecutive papers: rate limiter (`this.user` vs `this.users`), Observer (`this.observer` vs `this.observers`), constructor param (`maxCalls` stored as `maxRequests`). Not a typo — a systematic failure to cross-check declaration against usage. One coaching fix: after writing a constructor, scan all property usages before writing anything else.
+- **Copy-paste without adaptation.** Q3 Observer used `obs.update(this.symbol, this.price)` — directly lifted from the StockTracker focus session example without adapting to the new scenario. Signals shallow transfer: the structure is copied but the meaning of each line is not yet owned.
+- **Decorator wrapping concept is the current hardest gap.** The candidate still conflates "wrapping an instance" with "extending a class." Specifically: `constructor(formatter)` → `this.formatter = formatter` → `this.formatter.format(text)` has not clicked. Every other pattern is at partial transfer; Decorator is still at near-zero for implementation.
 - **System design concepts are a relative strength.** CAP theorem, caching, vertical vs horizontal scaling were all answered with real understanding. This is the most reliable new domain so far.
 
 ## Recurring Failure Modes
