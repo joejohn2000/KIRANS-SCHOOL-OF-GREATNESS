@@ -19,14 +19,16 @@ Use only actual student submissions and scored evaluations as evidence. Question
 | March 30, 2026 | Cumulative review through Day 19 (`tests/march-30/evaluation-score.md`) | 40/100 | Fresh transfer improved slightly, but broader mixed implementation still breaks; BST reasoning and XOR are improving faster than graph/string/Day 13 execution. |
 | April 3, 2026 | Day 20 + Refactoring & Design Patterns deviation (`tests/april-3/evaluation-score.md`) | 37/100 | Smell identification from code is reliable (75% on Q1); system design concepts are solid (65%); but pattern implementation was entirely blank (Q5, Q6 = 0/25) and rate limiter code had 5 structural bugs. Technique name vs smell name confusion is now a documented recurring error. |
 | April 3, 2026 (2nd) | Focus gate — patterns + rate limiter (`tests/april-3-2nd/evaluation-score.md`) | 23/50 (46%) | Factory Method structure transferred — went from 0 to a mostly-correct skeleton in one session (largest single improvement recorded). Observer broken by property name mismatch (same class of error as rate limiter the day before). Decorator wrapping concept still not understood. Property name mismatch is now a confirmed recurring habit across 3 answers on 2 consecutive papers. |
+| April 12/13, 2026 | System design MCQ marathon (`tests/april-12/evaluation-score.md`) | 94/120 (78.3%) | Broad system design vocabulary is now a reliable relative strength; load balancing, CAP basics, sharding/CDN/idempotency, and applied scenarios were mostly correct. Gaps remain in concrete technology matching, cache/replica nuance, queue vs stream tools, and observability/API recall. |
 
-## Current Read (Updated April 3, 2026)
+## Current Read (Updated April 13, 2026)
 
 The student is no longer in a "blank beginner" state. The durable pattern now is:
 - concept recognition and tracing improve faster than exact implementation,
 - narrow remediation works,
 - but transfer to fresh mixed prompts still breaks quickly,
 - and the concept-code gap now shows up in new domains (refactoring, design patterns) exactly as it did in algorithms — confirming this is a learning-style pattern, not a topic-specific one.
+- System design MCQ performance is now clearly stronger than implementation-heavy work, but not fully consolidated: the student recognizes most concepts and scenarios, while concrete tool selection and subtle operational trade-offs still need carry-over.
 
 Right now, the student is more reliable at:
 - identifying the intended pattern,
@@ -48,6 +50,7 @@ than at:
 - Recursive tree structure is improving; `maxDepth` was mostly correct and the base-case idea is understood.
 - Pattern recognition is ahead of execution: the student often knows they need a hash map, two pointers, bounds, or a queue even when the final code breaks.
 - BST split-point reasoning and simple XOR-based missing-number work are now becoming more dependable than before.
+- System design vocabulary and broad trade-off recognition are now reliable relative strengths: scalability, load balancing, AP/CP basics, sharding, CDN, idempotency, and many applied design scenarios were correct on the April 12 MCQ paper.
 
 ## Improving But Not Yet Reliable
 
@@ -58,13 +61,14 @@ than at:
 - Attention to detail is better than in the earliest tests, but it still collapses on broader fresh papers.
 - Rolling-DP structure is improving, but explanation quality still lags behind the code shape.
 
-## New Signals (April 3 — two sessions)
+## New Signals (April 3 and April 12)
 
 - **Factory Method structure transferred in one session.** After being entirely blank on April 3 morning, the candidate produced a mostly-correct Factory Method skeleton in the afternoon gate. This is the fastest single-session improvement recorded and confirms that the focused drill approach works for this student.
 - **Property name mismatch is now a confirmed recurring habit.** Appeared in 3 answers across 2 consecutive papers: rate limiter (`this.user` vs `this.users`), Observer (`this.observer` vs `this.observers`), constructor param (`maxCalls` stored as `maxRequests`). Not a typo — a systematic failure to cross-check declaration against usage. One coaching fix: after writing a constructor, scan all property usages before writing anything else.
 - **Copy-paste without adaptation.** Q3 Observer used `obs.update(this.symbol, this.price)` — directly lifted from the StockTracker focus session example without adapting to the new scenario. Signals shallow transfer: the structure is copied but the meaning of each line is not yet owned.
 - **Decorator wrapping concept is the current hardest gap.** The candidate still conflates "wrapping an instance" with "extending a class." Specifically: `constructor(formatter)` → `this.formatter = formatter` → `this.formatter.format(text)` has not clicked. Every other pattern is at partial transfer; Decorator is still at near-zero for implementation.
 - **System design concepts are a relative strength.** CAP theorem, caching, vertical vs horizontal scaling were all answered with real understanding. This is the most reliable new domain so far.
+- **System design breadth improved under MCQ format.** The April 12 paper scored 94/120 (78.3%) across 120 fresh system design MCQs. Strengths: fundamentals, load balancing, CAP basics, sharding/CDN/idempotency, and applied scenario recognition. Carry-over: Kafka vs RabbitMQ vs Redis vs Elasticsearch, read replicas/replication lag, write-behind durability, cursor pagination, correlation IDs, and distributed rate limiter backing stores.
 
 ## Recurring Failure Modes
 

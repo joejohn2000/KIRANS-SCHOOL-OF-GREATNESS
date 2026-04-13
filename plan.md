@@ -1108,7 +1108,7 @@ Write a specific plan for the next 30 days based on your gap list. Must be concr
 | 25 | Node.js & REST | — | — |
 | 26 | Practice: Arrays/Strings | — | — |
 | 27 | Practice: Trees/Graphs | — | — |
-| 28 | System Design Practice | — | — |
+| 28 | System Design Practice / April 12 MCQ Marathon | ⚠️ Advance with carry-over (94/120, 78.3%) | Broad system design vocabulary is solid, but carry over concrete tool matching (Kafka/RabbitMQ/Redis/Elasticsearch), cache/replica nuance, reliability concepts, and API/observability recall before treating system design as consolidated. |
 | 29 | Full-Stack Project | — | — |
 | 30 | Mock Interview | — | — |
 
